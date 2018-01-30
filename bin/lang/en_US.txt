@@ -1,0 +1,11 @@
+# For non-English languages:
+# Make sure this file is encoded in UTF-8
+
+[English]
+MMENU_NEWGAME = New game
+MMENU_LVEDIT = Level editor
+MMENU_OPTIONS = Options
+MMENU_EXIT = Exit
+OPTIONS_GAME = Game options
+OPTIONS_AUDIO = Sound options
+OPTIONS_GFX = Graphics options

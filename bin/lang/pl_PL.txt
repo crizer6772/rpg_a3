@@ -1,0 +1,4 @@
+# For non-English languages:
+# Make sure this file is encoded in UTF-8
+
+[Polski]
