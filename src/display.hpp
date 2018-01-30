@@ -17,5 +17,3 @@ public:
 
 	bool SetVideoMode(int w, int h, int fsMode, int rr, int cDepth);
 };
-
-extern DisplayMgr MainDM;

@@ -69,4 +69,3 @@ bool DisplayMgr::SetVideoMode(int w, int h, int fsmode, int rr, int cDepth)
 		return true;
 	}
 }
-DisplayMgr MainDM;

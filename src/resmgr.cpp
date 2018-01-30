@@ -1,14 +1,28 @@
 #include "resmgr.hpp"
+#include "hlpfunc.hpp"
 
+ResourceMgr::resource::resource(int type, void* res, bool loaded, double last_used, char* filename)
+{
+	this->type = type;
+	this->res = res;
+	this->loaded = loaded;
+	this->last_used = last_used;
+	this->filename = filename;
+}
 ResourceMgr::resource::resource()
 {
-	type = RESMGR_RESTYPE_BITMAP;
-	res = NULL;
-	loaded = false;
-	last_used = -311.0;
-	filename = NULL;
+	resource(RESMGR_RESTYPE_BITMAP, NULL, false, -311.0, NULL);
+}
+ResourceMgr::resource::~resource()
+{
 }
 
+ResourceMgr::sFont::sFont()
+{
+	f = NULL;
+	loaded = false;
+	last_used = -311.0;
+}
 ResourceMgr::ResourceMgr()
 {
 	ReleaseTime = RESMGR_DEFAULT_RELEASE_TIME;
@@ -16,11 +30,28 @@ ResourceMgr::ResourceMgr()
 	NullBmp = NULL;
 	NullSmp = NULL;
 	GameFont = NULL;
-	resources = new resource[RESMGR_MAX_RESOURCES];
-	memset(resources, 0, RESMGR_MAX_RESOURCES*sizeof(resource*));
+	memset(resources, 0, RESMGR_MAX_RESOURCES*sizeof(resource));
+	memset(fonts, 0, RESMGR_MAX_FONTS*sizeof(fontres));
+	numResources = 0;
+	numFonts = 0;
+	GenerateNullResources();
 }
 ResourceMgr::~ResourceMgr()
 {
+	for(int i=0; i<RESMGR_MAX_RESOURCES; i++)
+	{
+		if(resources[i].filename)
+		{
+			delete[] resources[i].filename;
+		}
+	}
+	for(int i=0; i<RESMGR_MAX_FONTS; i++)
+	{
+		if(fonts[i].filename)
+		{
+			delete[] fonts[i].filename;
+		}
+	}
 	//ReleaseAllResources();
 }
 void ResourceMgr::SetReleaseTime(double milliseconds){
@@ -38,102 +69,224 @@ bool ResourceMgr::ReloadBitmap(const char* filename){
 bool ResourceMgr::ReloadSample(const char* filename){
 	return this->LoadSample(filename);
 }
+bool ResourceMgr::ReloadFont(const char* filename, uint32_t fSize){
+	return this->LoadFont(filename, fSize);
+}
 
-ResourceMgr::resource* ResourceMgr::FindResource(const char* filename)
+void ResourceMgr::GenerateNullResources()
 {
-	for(int i=0; i<RESMGR_MAX_RESOURCES&&resources[i].filename; i++)
+	//32 bits (4 bytes) per line, 32x32 monochrome image
+	uint32_t img_buf[32] = {0x00000000, 0x00000000, 0x00000000, 0x00000000,
+							0x00000000, 0x00003800, 0x02AB8B80, 0x02ABBA00,
+							0x02A8AB80, 0x00FB3980, 0x02000000, 0x00000000,
+							0x00000000, 0x00000000, 0x00000000, 0x00000000,
+							0x00000000, 0x00000000, 0x00000000, 0x00000000,
+							0x00000000, 0x00000000, 0x00000070, 0x155DD510,
+							0x154CD570, 0x15511550, 0x1F1DC770, 0x00401000,
+							0x00000000, 0x00000000, 0x00000000, 0x00000000};
+	uint16_t* audio_buf = new uint16_t[441];
+	memset(audio_buf, 0, 441*sizeof(uint16_t));
+
+	NullFont = al_create_builtin_font();
+	NullBmp = al_create_bitmap(32, 32);
+	NullSmp = al_create_sample(audio_buf, 441, 44100, ALLEGRO_AUDIO_DEPTH_INT16, ALLEGRO_CHANNEL_CONF_1, false);
+
+	ALLEGRO_BITMAP* tb = al_get_target_bitmap();
+	al_set_target_bitmap(NullBmp);
+	al_lock_bitmap(NullBmp, ALLEGRO_PIXEL_FORMAT_ANY, ALLEGRO_LOCK_WRITEONLY);
+	for(int i=0; i<32; i++)
 	{
-		if(strcmp(filename, resources[i].filename) == 0)
+		uint32_t h = 0x80000000;
+		uint32_t v = img_buf[31-i];
+		for(int j=0; j<32; j++)
 		{
-			return &resources[i];
+			ALLEGRO_COLOR cb = al_map_rgb(4, 25, 81);
+			ALLEGRO_COLOR cf = al_map_rgb(255, 233, 127);
+			ALLEGRO_COLOR f = (v&(h>>j))?cf:cb;
+
+			al_put_pixel(j, i, f);
 		}
 	}
+	al_unlock_bitmap(NullBmp);
+	al_set_target_bitmap(tb);
+
+	//delete[] audio_buf;
+}
+
+void ResourceMgr::SortResources(int a, int b)
+{
+	if(b<=a)
+	{
+		return;
+	}
+
+	int i = a-1;
+	int j = b+1;
+	while(1)
+	{
+		while(strcmp_c(resources[(a+b)/2].filename, resources[++i].filename) < 0);
+		while(strcmp_c(resources[(a+b)/2].filename, resources[--j].filename) > 0);
+		if(i <= j)
+		{
+			//swap
+			resource aux = resources[i];
+			resources[i] = resources[j];
+			resources[j] = aux;
+		}
+		else
+			break;
+	}
+	if(j > a)
+		SortResources(a, j);
+	if(i < b)
+		SortResources(i, b);
+}
+void ResourceMgr::SortResources()
+{
+	SortResources(0, numResources-1);
+}
+
+void ResourceMgr::SortFonts(int a, int b)
+{
+	if(b<=a)
+	{
+		return;
+	}
+
+	int i = a-1;
+	int j = b+1;
+	while(1)
+	{
+		while(strcmp_c(fonts[(a+b)/2].filename, fonts[++i].filename) < 0);
+		while(strcmp_c(fonts[(a+b)/2].filename, fonts[--j].filename) > 0);
+		if(i <= j)
+		{
+			//swap
+			fontres aux = fonts[i];
+			fonts[i] = fonts[j];
+			fonts[j] = aux;
+		}
+		else
+			break;
+	}
+	if(j > a)
+		SortFonts(a, j);
+	if(i < b)
+		SortFonts(i, b);
+}
+void ResourceMgr::SortFonts()
+{
+	SortFonts(0, numFonts-1);
+}
+
+
+ResourceMgr::fontres* ResourceMgr::FindFont(const char* name)
+{
+	if(numFonts<1)
+		return NULL;
+	int l = 0;
+	int h = numFonts-1;
+	int i = 0;
+	while(l<=h)
+	{
+		i = l + (h-l)/2;
+		int c = strcmp_c(fonts[i].filename, name);
+		if(!c)
+			return &fonts[i];
+		if(c<0)
+			h = i-1;
+		else
+			l = i+1;
+	}
+
+	return NULL;
+}
+
+ResourceMgr::resource* ResourceMgr::FindResource(const char* name)
+{
+	int l = 0;
+	int h = numResources-1;
+	int i = 0;
+	while(l<=h)
+	{
+		i = l + (h-l)/2;
+		int c = strcmp_c(resources[i].filename, name);
+		if(!c)
+			return &resources[i];
+		if(c<0)
+			h = i-1;
+		else
+			l = i+1;
+	}
+
 	return NULL;
 }
 
 bool ResourceMgr::LoadBitmap(const char* filename)
 {
-	printf("loading %s\n", filename);
 	ALLEGRO_BITMAP* ptr = al_load_bitmap(filename);
 	if(!ptr)
 	{
 		return false;
 	}
-	for(int i=0; i<RESMGR_MAX_RESOURCES; i++)
-	{
-		if(resources[i].filename == NULL)
-		{
-			char* nName = new char[strlen(filename)+1];
-			strcpy(nName, filename);
-			resource n;
-			n.type = RESMGR_RESTYPE_BITMAP;
-			n.res = ptr;
-			n.loaded = true;
-			n.last_used = al_get_time();
-			n.filename = nName;
 
-			resources[i] = n;
-			return true;
-		}
-		if(strcmp(filename, resources[i].filename) == 0)
-		{
-			if(!resources[i].loaded)
-			{
-				resources[i].res = ptr;
-				resources[i].loaded = true;
-				resources[i].last_used = al_get_time();
-			}
-			else
-			{
-				al_destroy_bitmap(ptr);
-			}
-			return true;
-		}
+	resource* r = FindResource(filename);
+	if(!r)
+	{
+		resources[numResources++] = resource(RESMGR_RESTYPE_BITMAP, ptr, true, al_get_time(), new char[strlen(filename)+1]);
+		strcpy(resources[numResources-1].filename, filename);
+		SortResources();
+		return true;
 	}
+	else
+	{
+		if(!r->loaded)
+		{
+			r->res = ptr;
+			r->loaded = true;
+			r->last_used = al_get_time();
+		}
+		else
+		{
+			al_destroy_bitmap(ptr);
+		}
+		return true;
+	}
+
 	return false;
 }
 
 bool ResourceMgr::LoadSample(const char* filename)
 {
-
-	printf("loading %s\n", filename);
 	ALLEGRO_SAMPLE* ptr = al_load_sample(filename);
 	if(!ptr)
 	{
 		return false;
 	}
-	for(int i=0; i<RESMGR_MAX_RESOURCES; i++)
+
+	resource* r = FindResource(filename);
+	if(!r)
 	{
-		if(resources[i].filename == NULL)
-		{
-			char* nName = new char[strlen(filename)];
-			strcpy(nName, filename);
-
-			resource n;
-			n.type = RESMGR_RESTYPE_BITMAP;
-			n.res = ptr;
-			n.loaded = true;
-			n.last_used = al_get_time();
-			n.filename = nName;
-
-			resources[i] = n;
-			return true;
-		}
-		if(strcmp(filename, resources[i].filename) == 0)
-		{
-			if(!resources[i].loaded)
-			{
-				resources[i].res = ptr;
-				resources[i].loaded = true;
-				resources[i].last_used = al_get_time();
-			}
-			else
-			{
-				al_destroy_sample(ptr);
-			}
-			return true;
-		}
+		resources[numResources++] = resource(RESMGR_RESTYPE_SAMPLE, ptr, true, al_get_time(), new char[strlen(filename)+1]);
+		strcpy(resources[numResources-1].filename, filename);
+		SortResources();
+		return true;
 	}
+	else
+	{
+		if(!r->loaded)
+		{
+			r->res = ptr;
+			r->loaded = true;
+			r->last_used = al_get_time();
+		}
+		else
+		{
+			al_destroy_sample(ptr);
+		}
+		return true;
+	}
+
 	return false;
 }
 
@@ -205,6 +358,87 @@ ALLEGRO_SAMPLE* ResourceMgr::GetSample(const char* filename)
 		}
 	}
 	return NullSmp;
+}
+
+bool ResourceMgr::LoadFont(const char* filename, uint32_t fSize)
+{
+	uint32_t rSize = ui32clip(1, fSize, RESMGR_MAX_FONT_SIZE);
+	ALLEGRO_FONT* ptr = al_load_font(filename, -(int32_t)rSize, 0);
+	if(!ptr)
+	{
+		al_destroy_font(ptr);
+		return false;
+	}
+	fontres* r = FindFont(filename);
+
+	if(!r)
+	{
+		fontres n;
+		n.capacity = pow2round(rSize)<<1;
+		n.s = new sFont[n.capacity];
+		n.s[rSize].f = ptr;
+		n.s[rSize].last_used = al_get_time();
+		n.s[rSize].loaded = true;
+		n.filename = new char[strlen(filename)+1];
+		strcpy(n.filename, filename);
+		fonts[numFonts++] = n;
+		SortFonts();
+		return true;
+	}
+	else
+	{
+		size_t dCap = pow2round(rSize)<<1;
+		if(r->capacity < dCap)
+		{
+			sFont* n = new sFont[dCap];
+			memcpy(n, r->s, ui32min(r->capacity, dCap)*sizeof(sFont));
+			delete[] r->s;
+			r->s = n;
+			r->capacity = dCap;
+		}
+		if(r->s[rSize].f == NULL || !r->s[rSize].loaded)
+		{
+			r->s[rSize].f = ptr;
+			r->s[rSize].last_used = al_get_time();
+			r->s[rSize].loaded = true;
+			return true;
+		}
+		else
+		{
+			al_destroy_font(ptr);
+			return true;
+		}
+	}
+}
+
+ALLEGRO_FONT* ResourceMgr::GetFont(const char* filename, uint32_t fSize)
+{
+	uint32_t rSize = ui32clip(1, fSize, RESMGR_MAX_FONT_SIZE);
+	fontres* r = FindFont(filename);
+	if(!r)
+	{
+		if(!LoadFont(filename, fSize))
+			return NullFont;
+		else
+			return FindFont(filename)->s[rSize].f;
+	}
+	else
+	{
+		if(!r->s[rSize].loaded)
+		{
+			if(!LoadFont(filename, rSize))
+			{
+				return NullFont;
+			}
+			r->s[rSize].last_used = al_get_time();
+			return r->s[rSize].f;
+		}
+		else
+		{
+			return r->s[rSize].f;
+		}
+	}
+	return NullFont;
 }
 
 int ResourceMgr::DetectExtension(const char* filename)
@@ -285,6 +519,19 @@ void ResourceMgr::ReleaseUnusedResources()
 			r->loaded = false;
 		}
 	}
+	for(int i=0; i<numFonts; i++)
+	{
+		fontres* r = &fonts[i];
+		for(int j=0; j<r->capacity; j++)
+		{
+			sFont* rs = &(r->s[j]);
+			if(rs->last_used < al_get_time()-ReleaseTime && rs->loaded)
+			{
+				al_destroy_font(rs->f);
+				rs->loaded = false;
+			}
+		}
+	}
 }
 
 void ResourceMgr::ReleaseAllResources()
@@ -322,6 +569,5 @@ void ResourceMgr::ReloadAllResources()
 			this->LoadSample(r->filename);
 		}
 	}
+	GenerateNullResources();
 }
-
-ResourceMgr MainRM;
