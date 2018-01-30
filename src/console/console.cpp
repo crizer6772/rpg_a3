@@ -394,12 +394,11 @@ bool GameConsole::ExecuteCommand(const char* cmd)
 	{
 		return false;
 	}
-	char* cmdpart = new char[s+1];
-	char* argpart = new char[s+1];
+	char cmdpart[s+1];
+	char argpart[s+1];
 	memset(cmdpart, 0, s+1);
 	memset(argpart, 0, s+1);
 	ParseCommand(cmd, cmdpart, s, argpart, s);
-
 	c = FindCommand(cmdpart);
 	if(!c)
 	{
