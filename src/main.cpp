@@ -9,10 +9,10 @@ int main(int argc, char** argv)
 {
 	if(!Allegro5FullInit())
 		return 0;
+	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 
-	DisplayMgr* MainDM = new DisplayMgr;
-	ResourceMgr* MainRM = new ResourceMgr;
 	GameConsole* test = new GameConsole;
+	DisplayMgr* MainDM = new DisplayMgr;
 	test->CreateCVar("sqrt2", "1.414213562373095");
 	test->CreateCVar("pi", "3.141592653589793");
 	test->CreateCVar("e", "2.718281828459045");
@@ -22,11 +22,12 @@ int main(int argc, char** argv)
 	MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
 						test->GetCVarI32("DM_ColorDepth"));
+
+
+	ResourceMgr* MainRM = new ResourceMgr;
 	MainRM->SetReleaseTime(test->GetCVarUI32("RM_ReleaseTime"));
 	MainRM->SetNoReleaseThreshold(test->GetCVarI32("RM_NoReleaseThreshold"));
 
-	//MainRM->NullBmp = al_load_bitmap("data/null.bmp");
-	MainRM->GameFont = al_load_ttf_font("data/fonts/nsans_cb.ttf", 16, 0);
 	al_clear_to_color(al_map_rgb(255,255,255));
 	al_rest(0.1);
 	bool state = 0;
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
 			MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
 						test->GetCVarI32("DM_ColorDepth"));
-			MainRM->ReloadAllResources();
+			MainRM->ReleaseAllResources();
 		}
 	}
 }

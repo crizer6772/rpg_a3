@@ -58,7 +58,6 @@ class ResourceMgr
 
 	void GenerateNullResources();
 public:
-	ALLEGRO_FONT* GameFont;
 	ALLEGRO_FONT* NullFont;
 	ALLEGRO_BITMAP* NullBmp; //returned by GetBitmap()/GetSample() when the actual resource can't be loaded
 	ALLEGRO_SAMPLE* NullSmp;

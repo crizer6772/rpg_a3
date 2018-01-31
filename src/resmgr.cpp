@@ -29,7 +29,6 @@ ResourceMgr::ResourceMgr()
 	NoReleaseThreshold = RESMGR_DEFAULT_NORELEASE_THRESHOLD;
 	NullBmp = NULL;
 	NullSmp = NULL;
-	GameFont = NULL;
 	memset(resources, 0, RESMGR_MAX_RESOURCES*sizeof(resource));
 	memset(fonts, 0, RESMGR_MAX_FONTS*sizeof(fontres));
 	numResources = 0;
@@ -550,6 +549,27 @@ void ResourceMgr::ReleaseAllResources()
 		}
 		r->res = NULL;
 		r->loaded = false;
+	}
+
+	for(int i=0; i<numFonts; i++)
+	{
+		fontres* r = &fonts[i];
+		for(int j=0; j<r->capacity; j++)
+		{
+			sFont* rs = &(r->s[j]);
+			if(rs->loaded)
+			{
+				al_destroy_font(rs->f);
+				rs->loaded = false;
+			}
+		}
+	}
+	if(NullFont && NullBmp && NullSmp)
+	{
+		al_destroy_font(NullFont);
+		al_destroy_sample(NullSmp);
+		al_destroy_bitmap(NullBmp);
+		GenerateNullResources();
 	}
 }
 

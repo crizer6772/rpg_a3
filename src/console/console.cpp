@@ -41,8 +41,6 @@ GameConsole::GameConsole()
 	cLogBufH = 0;
 	ConsoleLogBuf = NULL;
 }
-
-
 /**
 CVAR RELATED FUNCTIONS
 **/
