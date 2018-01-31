@@ -47,6 +47,8 @@
 		<Unit filename="src/display.cpp" />
 		<Unit filename="src/display.hpp" />
 		<Unit filename="src/global.hpp" />
+		<Unit filename="src/hlpfunc.cpp" />
+		<Unit filename="src/hlpfunc.hpp" />
 		<Unit filename="src/incl_a5.hpp" />
 		<Unit filename="src/incl_full.hpp" />
 		<Unit filename="src/incl_std.hpp" />

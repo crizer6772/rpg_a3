@@ -52,16 +52,7 @@ ConsoleVariable* GameConsole::FindCVar(const char* name)
 	{
 		return NULL;
 	}
-	//linear search version (2018-01-16)
-	/*
-	for(int i=0; strlen(cvars[i].name); i++)
-	{
-		if(!strcmp_c(name, cvars[i].name))
-			return &cvars[i];
-	}
-	*/
 
-	//binary search version (2018-01-20)
 	int l = 0;
 	int h = numCVars-1;
 	int i = 0;
@@ -167,8 +158,8 @@ char* GameConsole::GetCVar(const char* name)
 }
 bool GameConsole::SetCVar(const char* name, int64_t value)
 {
-	char buf[64];
-	memset(buf, 0, 64);
+	char buf[32];
+	memset(buf, 0, 32);
 	sprintf(buf, "%lld", value);
 
 	SetCVar(name, buf);
@@ -180,8 +171,8 @@ bool GameConsole::SetCVar(const char* name, int32_t value)
 }
 bool GameConsole::SetCVar(const char* name, double value)
 {
-	char buf[64];
-	memset(buf, 0, 64);
+	char buf[32];
+	memset(buf, 0, 32);
 	sprintf(buf, "%f", value);
 
 	SetCVar(name, buf);

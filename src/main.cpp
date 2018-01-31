@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 		int bw = al_get_bitmap_width(tb);
 		int bh = al_get_bitmap_height(tb);
 		al_draw_scaled_bitmap(tb,0,0,bw,bh,0,0,test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),0);
-		al_draw_text(MainRM->GetFont("data/fonts/nsans.ttf", 26+10*sin(al_get_time())), al_map_rgb(255,255,255), 10, 10, 0, "font test");
+		al_draw_text(MainRM->GetFont("data/fonts/rmono.ttf", 26+10*sin(al_get_time()*8)), al_map_rgb(255,255,255), 10, 10, 0, "font test");
 		al_flip_display();
 		MainRM->ReleaseUnusedResources();
 

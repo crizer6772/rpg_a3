@@ -357,6 +357,8 @@ ALLEGRO_SAMPLE* ResourceMgr::GetSample(const char* filename)
 			return (ALLEGRO_SAMPLE*)r->res;
 		}
 	}
+
+
 	return NullSmp;
 }
 
@@ -380,7 +382,7 @@ bool ResourceMgr::LoadFont(const char* filename, uint32_t fSize)
 		n.s[rSize].last_used = al_get_time();
 		n.s[rSize].loaded = true;
 		n.filename = new char[strlen(filename)+1];
-		strcpy(n.filename, filename);
+		strcpy(n.filename,filename);
 		fonts[numFonts++] = n;
 		SortFonts();
 		return true;
@@ -481,7 +483,6 @@ void ResourceMgr::ReleaseUnusedResources()
 	for(int i=0; i<RESMGR_MAX_RESOURCES&&resources[i].filename; i++)
 	{
 		resource* r = &resources[i];
-
 		//resource size check
 		int rSize = 0x7FFFFFFF;
 		if(r->type == RESMGR_RESTYPE_BITMAP && r->loaded)
@@ -538,20 +539,17 @@ void ResourceMgr::ReleaseAllResources()
 {
 	for(int i=0; i<RESMGR_MAX_RESOURCES&&resources[i].filename; i++)
 	{
-		if(true)
+		resource* r = &resources[i];
+		if(r->type == RESMGR_RESTYPE_BITMAP)
 		{
-			resource* r = &resources[i];
-			if(r->type == RESMGR_RESTYPE_BITMAP)
-			{
-				al_destroy_bitmap((ALLEGRO_BITMAP*)r->res);
-			}
-			else if(r->type == RESMGR_RESTYPE_SAMPLE)
-			{
-				al_destroy_sample((ALLEGRO_SAMPLE*)r->res);
-			}
-			r->res = NULL;
-			r->loaded = false;
+			al_destroy_bitmap((ALLEGRO_BITMAP*)r->res);
 		}
+		else if(r->type == RESMGR_RESTYPE_SAMPLE)
+		{
+			al_destroy_sample((ALLEGRO_SAMPLE*)r->res);
+		}
+		r->res = NULL;
+		r->loaded = false;
 	}
 }
 
@@ -567,6 +565,17 @@ void ResourceMgr::ReloadAllResources()
 		else if(r->type == RESMGR_RESTYPE_SAMPLE)
 		{
 			this->LoadSample(r->filename);
+		}
+	}
+	for(int i=0; i<RESMGR_MAX_FONTS&&fonts[i].filename; i++)
+	{
+		fontres* r = &fonts[i];
+		for(int j=0; j<r->capacity; j++)
+		{
+			if(r->s[j].last_used > 0)
+			{
+				LoadFont(r->filename, j);
+			}
 		}
 	}
 	GenerateNullResources();
