@@ -1,5 +1,5 @@
 #include "resmgr.hpp"
-#include "hlpfunc.hpp"
+#include "../hlpfunc.hpp"
 
 ResourceMgr::resource::resource(int type, void* res, bool loaded, double last_used, char* filename)
 {

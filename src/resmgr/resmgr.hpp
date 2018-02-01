@@ -1,6 +1,6 @@
 #pragma once
 
-#include "incl_full.hpp"
+#include "../incl_full.hpp"
 
 #define RESMGR_RESTYPE_BITMAP 0
 #define RESMGR_RESTYPE_SAMPLE 1

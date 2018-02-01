@@ -1,7 +1,7 @@
 #include "incl_full.hpp"
 #include "a5init.hpp"
-#include "resmgr.hpp"
-#include "display.hpp"
+#include "resmgr/resmgr.hpp"
+#include "display/display.hpp"
 #include "console/console.hpp"
 #include "console/command.hpp"
 
