@@ -47,3 +47,10 @@ uint32_t pow2round(uint32_t n)
 	else
 		return pow2round(n>>1)<<1;
 }
+void byte2hex(char* out, uint8_t b)
+{
+	uint8_t n1 = b>>4;
+	uint8_t n2 = b&0x0F;
+	out[0] = (n1<10)?(n1+'0'):(n1+'A');
+	out[1] = (n2<10)?(n2+'0'):(n2+'A');
+}

@@ -1,5 +1,11 @@
 #include "command.hpp"
 
+
+int GCCMD_echo(void* arg, void* con)
+{
+	printf("%s\n", (char*)arg);
+	return 311;
+}
 int GCCMD_importcfg(void* arg, void* con)
 {
 	char* cArg = (char*)arg;
@@ -41,6 +47,7 @@ int GCCMD_listcommands(void* arg, void* con)
 
 bool RegisterStandardCommands(GameConsole* con)
 {
+	con->AddCommand("echo", (void*)GCCMD_echo, "do i really have to fucking explain");
 	con->AddCommand("importcfg", (void*)GCCMD_importcfg, "importcfg [name] - imports a config file to console variables");
 	con->AddCommand("listcvars", (void*)GCCMD_listcvars, "lists cvars in current console");
 	con->AddCommand("listcommands", (void*)GCCMD_listcommands, "list commands and pointers to their functions in current console");

@@ -63,6 +63,11 @@ public:
 	uint32_t GetCVarUI32(const char* name);
 	uint64_t GetCVarUI64(const char* name);
 
+	///STRING PARSING
+	bool IsReplacementTokenValid(const char* str);
+	size_t ParseReplacementToken(char* out, const char* str, size_t bufsize);
+	size_t ParseReplacementTokens(char* out, const char* str, size_t bufsize);
+
 	///LOG RELATED FUNCTIONS
 	bool LogBufAlloc(uint16_t w, uint16_t h, bool cls);
 	bool LogPush(void* str, bool utf32);
@@ -78,5 +83,5 @@ public:
 	bool RemoveCommand(const char* name);
 	void ListCommandsToFile(FILE* f);
 	void ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s, char* argpart, size_t argpart_s);
-	bool ExecuteCommand(const char* cmd);
+	int ExecuteCommand(const char* cmd);
 };
