@@ -37,6 +37,7 @@ class GameConsole
 	void SortCVars();
 	void SortCommands(int a, int b);
 	void SortCommands();
+
 public:
 	GameConsole();
 	size_t numCVars;

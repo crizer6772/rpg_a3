@@ -1,0 +1,13 @@
+﻿# For non-English languages:
+# Make sure this file is encoded in UTF-8
+
+langname = Русский
+
+TEXT_TEST = СУКА БЛЯТЬ
+MMENU_NEWGAME = Новая игра
+MMENU_LVEDIT = Редактор мап
+MMENU_OPTIONS = Настройки
+MMENU_EXIT = Пошол нахуй
+OPTIONS_GAME = Параметры игры
+OPTIONS_AUDIO = Настройки звука
+OPTIONS_GFX = Настройки видео

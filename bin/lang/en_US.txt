@@ -1,7 +1,9 @@
 # For non-English languages:
 # Make sure this file is encoded in UTF-8
 
-[English]
+langname = English (US)
+
+TEXT_TEST = Text test
 MMENU_NEWGAME = New game
 MMENU_LVEDIT = Level editor
 MMENU_OPTIONS = Options

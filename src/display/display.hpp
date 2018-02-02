@@ -1,5 +1,5 @@
 #pragma once
-#include "incl_full.hpp"
+#include "../incl_full.hpp"
 
 #define DM_FSMODE_WINDOWED 0
 #define DM_FSMODE_FULLSCREEN 1

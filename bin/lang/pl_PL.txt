@@ -1,4 +1,13 @@
-# For non-English languages:
+﻿# For non-English languages:
 # Make sure this file is encoded in UTF-8
 
-[Polski]
+langname = Polski
+
+TEXT_TEST = Test tekstu
+MMENU_NEWGAME = Nowa gra
+MMENU_LVEDIT = Edytor map
+MMENU_OPTIONS = Opcje
+MMENU_EXIT = Wyjście
+OPTIONS_GAME = Opcje rozgrywki
+OPTIONS_AUDIO = Opcje dźwięku
+OPTIONS_GFX = Opcje grafiki

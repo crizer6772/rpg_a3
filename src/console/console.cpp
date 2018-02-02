@@ -41,8 +41,6 @@ GameConsole::GameConsole()
 	cLogBufH = 0;
 	ConsoleLogBuf = NULL;
 }
-
-
 /**
 CVAR RELATED FUNCTIONS
 **/
@@ -100,10 +98,13 @@ bool GameConsole::RemoveCVar(const char* name)
 }
 void GameConsole::SortCVars(int a, int b)
 {
-	//yes i know, i don't need to do quicksort since we're only adding one entry at a time.
-	//what i should be doing is finding the index where we want to push the entry in O(n)
-	//and then push it there. but i'm lazy and this is just not worth doing having in mind
-	//how often you're gonna call CreateCVar()
+	/*
+	(2018-01-26)
+	yes i know, i don't need to do quicksort since we're only adding one entry at a time.
+	what i should be doing is finding the index where we want to push the entry in O(n)
+	and then push it there. but i'm lazy and this is just not worth doing having in mind
+	how often you're gonna call CreateCVar()
+	*/
 	if(b<=a)
 	{
 		return;

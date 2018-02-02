@@ -1,6 +1,6 @@
 #pragma once
 
-#include "incl_full.hpp"
+#include "../incl_full.hpp"
 
 #define RESMGR_RESTYPE_BITMAP 0
 #define RESMGR_RESTYPE_SAMPLE 1
@@ -58,7 +58,6 @@ class ResourceMgr
 
 	void GenerateNullResources();
 public:
-	ALLEGRO_FONT* GameFont;
 	ALLEGRO_FONT* NullFont;
 	ALLEGRO_BITMAP* NullBmp; //returned by GetBitmap()/GetSample() when the actual resource can't be loaded
 	ALLEGRO_SAMPLE* NullSmp;
