@@ -410,7 +410,7 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 				rtt[rts-2] = 0;
 				memcpy(rtt,&it[1],rts-2);
 				it += rts;
-				res -= rts;
+				//res -= rts;
 				res += ParseReplacementToken(NULL,rtt,0);
 				rti++;
 				delete[] rtt;

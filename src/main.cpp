@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	RegisterStandardCommands(test);
 	test->ExecuteCommand("importcfg config-new.ini");
 
-	test->ExecuteCommand("echo 0x%H8:e;asdfasf %R:echo test; hwdp%V:sqrt2;");
+	test->ExecuteCommand("echo e=0x%H8:e; sqrt(2)=%V:sqrt2; 273+38=%R:sum 273 38;");
 
 	MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
