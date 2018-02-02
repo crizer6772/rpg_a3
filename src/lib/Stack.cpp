@@ -72,7 +72,8 @@ public:
 	{
 		T dst;
 		dst = data.back();
-		data.resize( data.size()-1 );
+		if( data.size() )
+			data.resize( data.size()-1 );
 		return dst;
 	}
 	

@@ -121,7 +121,9 @@ public:
 	
 	inline T & back()
 	{
-		return *(ptr+ptrsize-1);
+		if( ptrsize )
+			return *(ptr+ptrsize-1);
+		return *ptr;
 	}
 	
 	inline void push_back( const T& src )
