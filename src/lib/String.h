@@ -41,20 +41,20 @@ public:
 	inline char* begin() const;
 	inline char* end() const;
 	
-	inline long long int size() const;
+	inline unsigned long long int size() const;
 	
-	inline char& operator [] ( const long long int id );
+	inline char& operator [] ( const unsigned long long int id );
 	
-	inline String& Set( const char * src, const long long int size );
+	inline String& Set( const char * src, const unsigned long long int size );
 	inline String& operator = ( const String& src );
 	inline String& operator = ( const char * src );
 	
-	inline String& append( const char * src, const long long int size );
+	inline String& append( const char * src, const unsigned long long int size );
 	inline String& operator += ( const char * src );
 	inline String& operator += ( const String& src );
 	inline String& operator += ( const char src );
 	
-	inline String add( const char * src, const long long int size ) const;;
+	inline String add( const char * src, const unsigned long long int size ) const;;
 	inline String operator + ( const char * src );
 	inline String operator + ( const String& src );
 	inline String operator + ( const char src ) const;

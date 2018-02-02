@@ -39,7 +39,7 @@ private:
 	
 public:
 	
-	inline long long int size() const
+	inline unsigned long long int size() const
 	{
 		return ptrsize;
 	}
@@ -61,53 +61,57 @@ public:
 		return ptr+ptrsize;
 	}
 	
-	inline T & operator[]( const long long int id )
+	inline T & operator[]( const unsigned long long int id )
 	{
 		return *(ptr+id);
 	}
 	
-	inline T & at( const long long int id )
+	inline T & at( const unsigned long long int id )
 	{
 		return *(ptr+id);
 	}
 	
-	inline void insert( long long int point, const T& src )
+	inline void insert( unsigned long long int point, const T& src )
 	{
-		long long int bsize = ptrsize - point;
+		unsigned long long int bsize = ptrsize - point;
 		resize( ptrsize + 1 );
 		
 		memmove( ptr + point + 1, ptr + point, bsize * sizeof(T) );
 		ptr[point] = src;
 	}
 	
-	inline void insert( long long int point, const T * beg, const T * end )
+	inline void insert( unsigned long long int point, const T * beg, const T * end )
 	{
-		long long int bsize = ptrsize - point;
+		unsigned long long int bsize = ptrsize - point;
 		resize( ptrsize + end - beg );
 		
 		memmove( ptr + point + (end - beg), ptr + point, bsize * sizeof(T) );
 		memcpy( ptr + point, beg, (end - beg) * sizeof(T) );
 	}
 	
-	inline void erase( long long int beg, long long int end )
+	inline void erase( unsigned long long int beg, unsigned long long int end )
 	{
-		if( end > beg )
+		if( end < beg )
 		{
-			if( end < ptrsize )
-			{
-				memmove( ptr + beg, ptr + end, (ptrsize - end) * sizeof(T) );
-				resize( beg + ( ptrsize - end ) );
-			}
-			else
-			{
-				resize( beg );
-			}
+			unsigned long long int temp = beg;
+			beg = end;
+			end = temp;
+		}
+		
+		if( end < ptrsize )
+		{
+			memmove( ptr + beg, ptr + end, (ptrsize - end) * sizeof(T) );
+			resize( beg + ( ptrsize - end ) );
+		}
+		else
+		{
+			resize( beg );
 		}
 	}
 	
 	inline void erase( const T * beg, const T * end )
 	{
-		erase( (long long int)(beg-begin()), (long long int)(end-begin()) );
+		erase( (unsigned long long int)(beg-begin()), (unsigned long long int)(end-begin()) );
 	}
 	
 	inline T & front()
@@ -149,7 +153,7 @@ public:
 	
 	inline void shrink_to_fit()
 	{
-		long long int temp = ( ( ptrsize >> ARRAY_SHIFT_BIT_FULL_SIZE ) + 1 ) << ARRAY_SHIFT_BIT_FULL_SIZE;
+		unsigned long long int temp = ( ( ptrsize >> ARRAY_SHIFT_BIT_FULL_SIZE ) + 1 ) << ARRAY_SHIFT_BIT_FULL_SIZE;
 		if( temp < fullsize )
 		{
 			fullsize = temp;
@@ -157,9 +161,9 @@ public:
 		}
 	}
 	
-	inline void resize( const long long int size )
+	inline void resize( const unsigned long long int size )
 	{
-		long long int temp = ( ( size >> ARRAY_SHIFT_BIT_FULL_SIZE ) + 1 ) << ARRAY_SHIFT_BIT_FULL_SIZE;
+		unsigned long long int temp = ( ( size >> ARRAY_SHIFT_BIT_FULL_SIZE ) + 1 ) << ARRAY_SHIFT_BIT_FULL_SIZE;
 		
 		if( temp > fullsize )
 		{
@@ -176,14 +180,14 @@ public:
 		fullsize = 1 << ARRAY_SHIFT_BIT_FULL_SIZE;
 	}
 	
-	inline long long int capacity() const
+	inline unsigned long long int capacity() const
 	{
 		return fullsize;
 	}
 	
-	inline void reserve_mem( long long int size /*size>ptrsize*/ )
+	inline void reserve_mem( unsigned long long int size /*size>ptrsize*/ )
 	{
-		long long int temp = ( ( size >> ARRAY_SHIFT_BIT_FULL_SIZE ) + 1 ) << ARRAY_SHIFT_BIT_FULL_SIZE;
+		unsigned long long int temp = ( ( size >> ARRAY_SHIFT_BIT_FULL_SIZE ) + 1 ) << ARRAY_SHIFT_BIT_FULL_SIZE;
 		if( temp > fullsize )
 		{
 			fullsize = temp;

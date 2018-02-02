@@ -13,12 +13,12 @@ class World
 {
 private:
 	
-	Map < String, Actor* > actor;
-	Map < String, GraphicBody* > model;
+	Map < String, Actor*, 8 > actor;
+	Map < String, GraphicBody*, 8 > model;
 	
 	vec2 colliderOffset;
 	vec2 colliderSize;
-	Quadtree < Array < Actor* > > collider;
+	Quadtree < Array < Actor*, 8 > > collider;
 	
 	float deltaTime;
 	

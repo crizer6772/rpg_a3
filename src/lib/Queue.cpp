@@ -34,10 +34,9 @@ class Queue
 private:
 	
 	Array < T, ARRAY_SHIFT_BIT_FULL_SIZE > data;
-	long long int curoffset;
+	unsigned long long int curoffset;
 	
 public:
-	
 	
 	inline T * begin() const
 	{
@@ -54,7 +53,15 @@ public:
 		return data.size()-curoffset;
 	}
 	
-	inline T& operator [] ( const long long int id )
+	template < int a__, int b__ >
+	inline T& operator = ( const Queue < T, a__, b__ > & src )
+	{
+		curoffset = 0;
+		data.resize( src.data.size()-src.curoffset );
+		memcpy( data.begin(), src.data.begin(), data.size() );
+	}
+	
+	inline T& operator [] ( const unsigned long long int id )
 	{
 		return data[curoffset+id];
 	}
@@ -79,11 +86,14 @@ public:
 		T dst = data[curoffset];
 		++curoffset;
 		if( curoffset >= (1<<BEGIN_POINT_MAX_OFFSET_SHIFT_BIT) )
+		{
 			data.erase( 0, curoffset );
+			curoffset = 0;
+		}
 		return dst;
 	}
 	
-	inline void reserve_mem( long long int size )
+	inline void reserve_mem( const unsigned long long int size )
 	{
 		data.reserve_mem( size );
 	}

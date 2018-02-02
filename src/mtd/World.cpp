@@ -90,7 +90,7 @@ void World::DeleteActor( const String& name )
 
 World::World()
 {
-	this->collider.Init( 10, Array<Actor*>() );
+	this->collider.Init( 10, Array<Actor*,8>() );
 }
 
 World::~World()

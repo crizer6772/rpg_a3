@@ -59,33 +59,33 @@ public:
 		return (bool)file;
 	}
 	
-	inline long long int getfilesize()
+	inline unsigned long long int getfilesize()
 	{
 		if( file )
 		{
-			long long int size, temp;
+			unsigned long long int size, temp;
 			temp = ftell( file );
 			fseek( file, 0L, SEEK_END );
 			size = ftell( file );
-			fseek( file, temp, SEEK_BEGIN );
+			fseek( file, temp, SEEK_SET );
 			return size;
 		}
 		return 0;
 	}
 	
 	template < class T >
-	inline bool read( T * data, const long long int maxlen )
+	inline bool read( T * data, const unsigned long long int maxlen )
 	{
 		if( file )
 		{
-			memset( data, 0, count*sizeof(T) );
-			fread( data, sizeof(T), count, file );
+			memset( data, 0, maxlen*sizeof(T) );
+			fread( data, sizeof(T), maxlen, file );
 		}
 		return false;
 	}
 	
 	template < class T >
-	inline bool write( const T * data, const long long int count )
+	inline bool write( const T * data, const unsigned long long int count )
 	{
 		if( file )
 		{
@@ -112,7 +112,7 @@ public:
 			while( true )
 			{
 				sign = 0;
-				fread( sign, sizeof(char), 1, file );
+				fread( &sign, sizeof(char), 1, file );
 				if( sign == 0 || sign == '\n' )
 					break;
 				dst += sign;
@@ -129,12 +129,12 @@ public:
 			while( ( (unsigned char)sign <= ' ' || sign == 127 || (unsigned char)sign == 255 ) && sign != 0 )
 			{
 				sign = 0;
-				fread( sign, sizeof(char), 1, file );
+				fread( &sign, sizeof(char), 1, file );
 			}
 			while( true )
 			{
 				sign = 0;
-				fread( sign, sizeof(char), 1, file );
+				fread( &sign, sizeof(char), 1, file );
 				if( (unsigned char)sign <= ' ' || sign == 127 || (unsigned char)sign == 255 )
 					break;
 				dst += sign;
@@ -265,7 +265,7 @@ public:
 	{
 		if( file )
 		{
-			fwrite( &sign, sizeof(char), 1, file );
+			fwrite( &src, sizeof(char), 1, file );
 		}
 	}
 	

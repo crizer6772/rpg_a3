@@ -52,7 +52,13 @@ public:
 		return data.size();
 	}
 	
-	inline T& operator [] ( const long long int id )
+	template < int a__ >
+	inline T& operator = ( const Stack < T, a__ > & src )
+	{
+		data = src.data;
+	}
+	
+	inline T& operator [] ( const unsigned long long int id )
 	{
 		return data[id];
 	}
@@ -80,7 +86,7 @@ public:
 		return data.back();
 	}
 	
-	inline void reserve_mem( long long int size )
+	inline void reserve_mem( const unsigned long long int size )
 	{
 		data.reserve_mem( size );
 	}

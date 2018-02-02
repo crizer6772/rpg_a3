@@ -43,17 +43,17 @@ inline char* String::end() const
 	return data.end()-1;
 }
 
-inline long long int String::size() const
+inline unsigned long long int String::size() const
 {
 	return data.size()-1;
 }
 
-inline char& String::operator [] ( const long long int id )
+inline char& String::operator [] ( const unsigned long long int id )
 {
 	return data[id];
 }
 
-inline String& String::Set( const char * src, const long long int size )
+inline String& String::Set( const char * src, const unsigned long long int size )
 {
 	data.resize( size+1 );
 	memcpy( data.begin(), src, size*sizeof(char) );
@@ -73,7 +73,7 @@ inline String& String::operator = ( const char * src )
 	return Set( src, strlen(src) );
 }
 
-inline String& String::append( const char * src, const long long int size )
+inline String& String::append( const char * src, const unsigned long long int size )
 {
 	data.insert( data.size()-1, src, src+size );
 	return *this;
@@ -97,7 +97,7 @@ inline String& String::operator += ( const char src )
 	return *this;
 }
 
-inline String String::add( const char * src, const long long int size ) const
+inline String String::add( const char * src, const unsigned long long int size ) const
 {
 	String dst;
 	dst.data.resize( data.size()+size );
@@ -129,49 +129,31 @@ inline String String::operator + ( const char src ) const
 
 inline bool String::operator < ( const String& src ) const
 {
-	long long int tempsize = data.size();
-	if( tempsize > src.data.size() )
-		tempsize = src.data.size();
 	return memcmp( data.begin(), src.data.begin(), data.size() < src.data.size() ? data.size() : src.data.size() ) < 0;
 }
 
 inline bool String::operator <= ( const String& src ) const
 {
-	long long int tempsize = data.size();
-	if( tempsize > src.data.size() )
-		tempsize = src.data.size();
 	return memcmp( data.begin(), src.data.begin(), data.size() < src.data.size() ? data.size() : src.data.size() ) <= 0;
 }
 
 inline bool String::operator > ( const String& src ) const
 {
-	long long int tempsize = data.size();
-	if( tempsize > src.data.size() )
-		tempsize = src.data.size();
 	return memcmp( data.begin(), src.data.begin(), data.size() < src.data.size() ? data.size() : src.data.size() ) > 0;
 }
 
 inline bool String::operator >= ( const String& src ) const
 {
-	long long int tempsize = data.size();
-	if( tempsize > src.data.size() )
-		tempsize = src.data.size();
 	return memcmp( data.begin(), src.data.begin(), data.size() < src.data.size() ? data.size() : src.data.size() ) >= 0;
 }
 
 inline bool String::operator == ( const String& src ) const
 {
-	long long int tempsize = data.size();
-	if( tempsize > src.data.size() )
-		tempsize = src.data.size();
 	return memcmp( data.begin(), src.data.begin(), data.size() < src.data.size() ? data.size() : src.data.size() ) == 0;
 }
 
 inline bool String::operator != ( const String& src ) const
 {
-	long long int tempsize = data.size();
-	if( tempsize > src.data.size() )
-		tempsize = src.data.size();
 	return memcmp( data.begin(), src.data.begin(), data.size() < src.data.size() ? data.size() : src.data.size() ) != 0;
 }
 
@@ -296,7 +278,7 @@ String::String( const double src )
 
 String::String( const char * src )
 {
-	long long int size = strlen(src);
+	unsigned long long int size = strlen(src);
 	data.resize( size+1 );
 	memcpy( data.begin(), src, data.size()*sizeof(char) );
 }
