@@ -20,7 +20,8 @@ int main(int argc, char** argv)
 	test->CreateCVar("e", "2.718281828459045");
 	RegisterStandardCommands(test);
 	test->ExecuteCommand("importcfg config-new.ini");
-	test->ExecuteCommand("echo %V:e;");
+
+	test->ExecuteCommand("echo 0x%H8:e;asdfasf %R:echo test; hwdp%V:sqrt2;");
 
 	MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),

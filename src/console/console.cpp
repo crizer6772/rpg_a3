@@ -244,7 +244,7 @@ size_t GameConsole::ParseReplacementToken(char* out, const char* str, size_t buf
 				return 8;
 			if(sp>1)
 			{
-				return atoi(&pc[1]);
+				return 2*atoi(&pc[1]);
 			}
 		}
 		if(pc[0] == 'R')
@@ -401,6 +401,7 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 		size_t res = 0;
 		for(char* it=(char*)str;*it;it++)
 		{
+			res++;
 			uint32_t i = it-str;
 			if(i == rtStart[rti] && rti<numrt)
 			{
@@ -408,17 +409,12 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 				char* rtt = new char[rts-1];
 				rtt[rts-2] = 0;
 				memcpy(rtt,&it[1],rts-2);
-				it = (char*)&str[rtEnd[rti]];
+				it += rts;
 				res -= rts;
 				res += ParseReplacementToken(NULL,rtt,0);
 				rti++;
 				delete[] rtt;
 			}
-			if(!(*it))
-			{
-				break;
-			}
-			res++;
 		}
 		return res;
 	}
@@ -441,7 +437,7 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 				rti++;
 				delete[] rtt;
 			}
-			if(!(*it))
+			if(!(*it) || i_out >= bufsize)
 			{
 				break;
 			}
