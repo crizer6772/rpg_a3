@@ -179,7 +179,7 @@ inline String& String::to_lowercase()
 {
 	char * it = data.begin();
 	for( ; it < data.end(); ++it )
-		if( *it >= 'A' && *it >= 'Z' )
+		if( *it >= 'A' && *it <= 'Z' )
 			*it += 'a'-'A';
 	return *this;
 }
@@ -188,7 +188,7 @@ inline String& String::to_uppercase()
 {
 	char * it = data.begin();
 	for( ; it < data.end(); ++it )
-		if( *it >= 'a' && *it >= 'z' )
+		if( *it >= 'a' && *it <= 'z' )
 			*it -= 'a'-'A';
 	return *this;
 }
@@ -197,10 +197,11 @@ inline String String::get_lowercase() const
 {
 	String dst;
 	dst.data.resize( data.size() );
-	char * it = data.begin(), itdst = dst.data.begin();
+	char * it = data.begin();
+	char * itdst = dst.data.begin();
 	for( ; it < data.end(); ++it, ++itdst )
 	{
-		if( *it >= 'A' && *it >= 'Z' )
+		if( *it >= 'A' && *it <= 'Z' )
 			*itdst = *it + ('a'-'A');
 		else
 			*itdst = *it;
@@ -212,10 +213,11 @@ inline String String::get_uppercase() const
 {
 	String dst;
 	dst.data.resize( data.size() );
-	char * it = data.begin(), itdst = dst.data.begin();
+	char * it = data.begin();
+	char * itdst = dst.data.begin();
 	for( ; it < data.end(); ++it, ++itdst )
 	{
-		if( *it >= 'a' && *it >= 'z' )
+		if( *it >= 'a' && *it <= 'z' )
 			*itdst = *it - ('a'-'A');
 		else
 			*itdst = *it;
@@ -231,63 +233,63 @@ String::String()
 
 String::String( const long long int src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%lld", src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const unsigned long long int src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%llu", src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const int src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%d", src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const unsigned int src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%u", src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const short src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%d", (int)src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const unsigned short src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%u", (unsigned int)src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const char src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%c", src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const unsigned char src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%c", src );
 	data.resize( strlen(data.begin())+1 );
 }
 
 String::String( const double src )
 {
-	data.resize( 32 );
+	data.resize( 64 );
 	sprintf( data.begin(), "%f", src );
 	data.resize( strlen(data.begin())+1 );
 }
