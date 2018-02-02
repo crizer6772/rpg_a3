@@ -44,17 +44,36 @@
 		<Unit filename="src/console/command.hpp" />
 		<Unit filename="src/console/console.cpp" />
 		<Unit filename="src/console/console.hpp" />
-		<Unit filename="src/display.cpp" />
-		<Unit filename="src/display.hpp" />
+		<Unit filename="src/css/Actor.h" />
+		<Unit filename="src/css/ActorDynamic.h" />
+		<Unit filename="src/css/ActorStatic.h" />
+		<Unit filename="src/css/GraphicBody.h" />
+		<Unit filename="src/css/World.h" />
+		<Unit filename="src/display/display.cpp" />
+		<Unit filename="src/display/display.hpp" />
 		<Unit filename="src/global.hpp" />
 		<Unit filename="src/hlpfunc.cpp" />
 		<Unit filename="src/hlpfunc.hpp" />
 		<Unit filename="src/incl_a5.hpp" />
 		<Unit filename="src/incl_full.hpp" />
 		<Unit filename="src/incl_std.hpp" />
+		<Unit filename="src/lang/langmgr.cpp" />
+		<Unit filename="src/lang/langmgr.hpp" />
+		<Unit filename="src/lib/Array.cpp" />
+		<Unit filename="src/lib/File.cpp" />
+		<Unit filename="src/lib/Map.cpp" />
+		<Unit filename="src/lib/Quadtree.cpp" />
+		<Unit filename="src/lib/Quadtree.h" />
+		<Unit filename="src/lib/Queue.cpp" />
+		<Unit filename="src/lib/Stack.cpp" />
+		<Unit filename="src/lib/String.cpp" />
+		<Unit filename="src/lib/String.h" />
+		<Unit filename="src/lib/vec2.cpp" />
+		<Unit filename="src/lib/vec2.h" />
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/resmgr.cpp" />
-		<Unit filename="src/resmgr.hpp" />
+		<Unit filename="src/mtd/World.cpp" />
+		<Unit filename="src/resmgr/resmgr.cpp" />
+		<Unit filename="src/resmgr/resmgr.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
