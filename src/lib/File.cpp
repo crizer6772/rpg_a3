@@ -40,6 +40,7 @@ public:
 	
 	inline bool open( const char * filename, const char * format )
 	{
+		close();
 		this->filename = filename;
 		file = fopen( filename, format );
 		return (bool)file;
@@ -51,6 +52,7 @@ public:
 		{
 			fclose( file );
 			file = NULL;
+			filename = "";
 		}
 	}
 	
@@ -73,15 +75,40 @@ public:
 		return 0;
 	}
 	
+	inline void setpos( const unsigned long long int pos )
+	{
+		if( file )
+		{
+			unsigned long long int filesize = getfilesize();
+			if( pos >= filesize )
+			{
+				fseek( file, 0L, SEEK_END );
+			}
+			else
+			{
+				fseek( file, pos, SEEK_SET );
+			}
+		}
+	}
+	
+	inline unsigned long long int getpos() const
+	{
+		if( file )
+		{
+			return ftell( file );
+		}
+		return 0;
+	}
+	
 	template < class T >
-	inline bool read( T * data, const unsigned long long int maxlen )
+	inline unsigned long long int read( T * data, const unsigned long long int maxlen )
 	{
 		if( file )
 		{
 			memset( data, 0, maxlen*sizeof(T) );
-			fread( data, sizeof(T), maxlen, file );
+			return (unsigned long long int)fread( data, sizeof(T), maxlen, file );
 		}
-		return false;
+		return 0;
 	}
 	
 	template < class T >
@@ -103,7 +130,7 @@ public:
 		return true;
 	}
 	
-	inline void getline( String& dst )
+	void getline( String& dst )
 	{
 		if( file )
 		{
@@ -120,17 +147,17 @@ public:
 		}
 	}
 	
-	inline void getword( String& dst )
+	void getword( String& dst )
 	{
 		if( file )
 		{
-			dst = "";
 			char sign = 1;
 			while( ( (unsigned char)sign <= ' ' || sign == 127 || (unsigned char)sign == 255 ) && sign != 0 )
 			{
 				sign = 0;
 				fread( &sign, sizeof(char), 1, file );
 			}
+			dst = String(sign);
 			while( true )
 			{
 				sign = 0;
@@ -149,7 +176,7 @@ public:
 		return false;
 	}
 	
-	inline double getfloat( const char separator )
+	double getfloat()
 	{
 		if( file )
 		{
@@ -167,7 +194,7 @@ public:
 						++pos;
 					}
 					
-					if( str[pos] == separator )
+					if( str[pos] == '.' )
 					{
 						++pos;
 						while( str[pos] >= '0' && str[pos] <= '9' )
@@ -187,12 +214,7 @@ public:
 		return 0;
 	}
 	
-	inline double getfloat()
-	{
-		return getfloat( '.' );
-	}
-	
-	inline long long int getll()
+	long long int getll()
 	{
 		if( file )
 		{
@@ -201,6 +223,7 @@ public:
 			String str;
 			while( true )
 			{
+				pos = 0;
 				getword( str );
 				if( str[pos] == '-' )
 					++pos;
@@ -224,7 +247,7 @@ public:
 		return 0;
 	}
 	
-	inline unsigned long long int getull()
+	unsigned long long int getull()
 	{
 		if( file )
 		{
@@ -233,6 +256,7 @@ public:
 			String str;
 			while( true )
 			{
+				pos = 0;
 				getword( str );
 				if( str[pos] >= '0' && str[pos] <= '9' )
 				{
