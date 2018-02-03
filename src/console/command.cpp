@@ -11,13 +11,13 @@ int GCCMD_sum(void* arg, void* con)
 	int pp=0;
 	for(size_t i=0; i<sl; i++)
 	{
-		if(str[i]>='0'&&str[i]<='9')
+		if((str[i]>='0'&&str[i]<='9')||str[i]=='-')
 		{
 			if(i==0)
 			{
 				p[pp++]=i;
 			}
-			else if(str[i-1]<='0'||str[i-1]>='9')
+			else if(str[i-1]!='-'&&(str[i-1]<='0'||str[i-1]>='9'))
 			{
 				p[pp++]=i;
 			}
@@ -47,15 +47,13 @@ int GCCMD_importcfg(void* arg, void* con)
 	}
 	ALLEGRO_CONFIG_ENTRY* it;
 	char* r = (char*)al_get_first_config_entry(cfg, NULL, &it);
-	while(1)
+	while(r)
 	{
 		char* cvName = r;
 		char* cvValue = (char*)al_get_config_value(cfg, NULL, cvName);
 		cCon->CreateCVar(cvName, cvValue);
 		printf("console <- (%s, value: %s)\n", cCon->FindCVar(cvName)->name, cCon->FindCVar(cvName)->data);
 		r = (char*)al_get_next_config_entry(&it);
-		if(!r)
-			break;
 	}
 	al_destroy_config(cfg);
 	return 1;

@@ -82,6 +82,6 @@ public:
 	bool AddCommand(const char* name, void* ptr, const char* helpstr);
 	bool RemoveCommand(const char* name);
 	void ListCommandsToFile(FILE* f);
-	void ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s, char* argpart, size_t argpart_s);
+	void ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s, char* argpart, size_t argpart_s, size_t rtsize);
 	int ExecuteCommand(const char* cmd);
 };

@@ -224,11 +224,14 @@ bool GameConsole::IsReplacementTokenValid(const char* str)
 size_t GameConsole::ParseReplacementToken(char* out, const char* str, size_t bufsize)
 {
 	uint32_t sp=0;
-	for(int i=0; i<3; i++)
+	for(int i=1; i<4; i++)
 		if(str[i]==':')
+		{
 			sp=i;
+			break;
+		}
 	char pc[4]={0,0,0,0};
-	memcpy(pc,str,sp);
+	memcpy(pc,str,ui32min(3,sp));
 	if(out == NULL)
 	{
 		if(pc[0] == 'V')
@@ -243,16 +246,15 @@ size_t GameConsole::ParseReplacementToken(char* out, const char* str, size_t buf
 			if(sp==1)
 				return 8;
 			if(sp>1)
-			{
 				return 2*atoi(&pc[1]);
-			}
 		}
 		if(pc[0] == 'R')
 		{
-			return 10; //max 10 digits in an int
+			return 11; //max 11 digits in an int
 		}
 		if(pc[0] == '%')
 			return 1;
+		return 0;
 	}
 	else
 	{
@@ -274,12 +276,13 @@ size_t GameConsole::ParseReplacementToken(char* out, const char* str, size_t buf
 			}
 			if(sp>1)
 			{
-				hsize = atoi(&pc[1]);
+				hsize = atoi(&str[1]);
 			}
 			char nbuf[64];
-			char* hb = new char[2*hsize+1];
-			memset(hb,0,2*hsize+1);
-			memset(nbuf,0,64);
+			char hb[2*hsize+1];
+			hb[2*hsize]=0;
+			//memset(hb,0,2*hsize+1);
+			//memset(nbuf,0,64);
 			strcpy(nbuf,&str[sp+1]);
 			for(int i=0; i<hsize; i++)
 			{
@@ -287,19 +290,17 @@ size_t GameConsole::ParseReplacementToken(char* out, const char* str, size_t buf
 				byte2hex(&hb[2*i], var[i]);
 			}
 			strcpy(out,hb);
-			delete[] hb;
 			return hsize*2;
 		}
 		if(pc[0]=='R')
 		{
 			size_t l = strlen(str);
-			char* cmdbuf = new char[l];
+			char cmdbuf[l];
 			memset(cmdbuf,0,l);
 			strcpy(cmdbuf,&str[sp+1]);
-			char res[11] = {0,0,0,0,0,0,0,0,0,0,0};
+			char res[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 			sprintf(res, "%d", ExecuteCommand(cmdbuf));
 			strcpy(out,res);
-			delete[] cmdbuf;
 			return strlen(res);
 		}
 		return 0;
@@ -366,7 +367,7 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 				if(i-crt >= 4)
 				{
 					size_t rtbs = (i-crt);
-					char* rtt = new char[rtbs];
+					char rtt[rtbs];
 					rtt[rtbs-1]=0;
 					memcpy(rtt, &str[crt+1], rtbs-1);
 
@@ -376,8 +377,6 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 						rtEnd[numrt] = i;
 						numrt++;
 					}
-
-					delete[] rtt;
 				}
 			}
 		}
@@ -398,25 +397,30 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 	uint32_t rti = 0;
 	if(out == NULL)
 	{
-		size_t res = 0;
-		for(char* it=(char*)str;*it;it++)
+		size_t strs = strlen(str);
+		size_t res = strs;
+		uint32_t i=0;
+		for(char* it=(char*)str;*it&&(uint32_t)(it-str)<strs;it++)
 		{
-			res++;
-			uint32_t i = it-str;
+			i = it-str;
 			if(i == rtStart[rti] && rti<numrt)
 			{
 				size_t rts = 1+rtEnd[rti]-rtStart[rti];
-				char* rtt = new char[rts-1];
+				char rtt[rts-1];
 				rtt[rts-2] = 0;
 				memcpy(rtt,&it[1],rts-2);
+				//printf("rtt=%s,rts=%d\n",rtt,rts);
 				it += rts;
-				//res -= rts;
+				res -= rts;
 				res += ParseReplacementToken(NULL,rtt,0);
 				rti++;
-				delete[] rtt;
+			}
+			if(!(*it))
+			{
+				break;
 			}
 		}
-		return res;
+		return res+1;
 	}
 	else
 	{
@@ -427,7 +431,7 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 			if(i == rtStart[rti] && rti<numrt)
 			{
 				size_t rts = 1+rtEnd[rti]-rtStart[rti];
-				char* rtt = new char[rts-1];
+				char rtt[rts-1];
 				rtt[rts-2] = 0;
 				memcpy(rtt,&it[1],rts-2);
 				it += rts;
@@ -435,7 +439,6 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 				i_out += shift;
 				out[i_out]=0;
 				rti++;
-				delete[] rtt;
 			}
 			if(!(*it) || i_out >= bufsize)
 			{
@@ -561,13 +564,11 @@ void GameConsole::ListCommandsToFile(FILE* f)
 		fprintf(f, "command #%d: %08X <- %s\n", i, (uint32_t)cmd[i].func, cmd[i].name);
 	}
 }
-void GameConsole::ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s, char* argpart, size_t argpart_s)
+void GameConsole::ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s, char* argpart, size_t argpart_s, size_t rtsize)
 {
-	size_t rtsize = ParseReplacementTokens(NULL, cmd, 0);
-	char* realcmd = new char[rtsize+8];
+	char realcmd[rtsize+8];
 	memset(realcmd,0,rtsize+8);
 	ParseReplacementTokens(realcmd, cmd, rtsize);
-
 	bool s = false;
 	size_t cmdsize = 0;
 	size_t argsize = 0;
@@ -587,26 +588,22 @@ void GameConsole::ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s,
 	}
 	memcpy(cmdpart, realcmd, ui32min(cmdpart_s, cmdsize));
 	memcpy(argpart, &realcmd[cmdsize+1], ui32min(argpart_s, argsize));
-	delete[] realcmd;
+	//delete[] realcmd;
 }
 int GameConsole::ExecuteCommand(const char* cmd)
 {
 	ConsoleCommand* c;
-	if(!cmd)
+	if(!cmd || !(*cmd))
 	{
 		printf("error: GameConsole: empty command\n");
 		return -1;
 	}
-	int s = strlen(cmd);
-	if(!s || !cmd)
-	{
-		return -1;
-	}
-	char cmdpart[s+64];
-	char argpart[s+64];
-	memset(cmdpart, 0, s+64);
-	memset(argpart, 0, s+64);
-	ParseCommand(cmd, cmdpart, s+63, argpart, s+63);
+	int s = ParseReplacementTokens(NULL,cmd,0)+1;
+	char cmdpart[s];
+	char argpart[s];
+	memset(cmdpart, 0, s);
+	memset(argpart, 0, s);
+	ParseCommand(cmd, cmdpart, s, argpart, s, s-1);
 	c = FindCommand(cmdpart);
 	if(!c)
 	{

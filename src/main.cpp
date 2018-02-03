@@ -18,10 +18,16 @@ int main(int argc, char** argv)
 	test->CreateCVar("sqrt2", "1.414213562373095");
 	test->CreateCVar("pi", "3.141592653589793");
 	test->CreateCVar("e", "2.718281828459045");
+	test->CreateCVar("i1", "273");
+	test->CreateCVar("i2", "38");
+	test->CreateCVar("a", "ABC");
+
 	RegisterStandardCommands(test);
+
+	test->ExecuteCommand("echo ABC(hex)=0x%H3:a; sqrt(2)=%V:sqrt2; %V:i1;+%V:i2;=%R:sum %V:i1; %V:i2;;");
 	test->ExecuteCommand("importcfg config-new.ini");
 
-	test->ExecuteCommand("echo e=0x%H8:e; sqrt(2)=%V:sqrt2; 273+38=%R:sum 273 38;");
+
 
 	MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
