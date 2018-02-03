@@ -21,6 +21,8 @@ int main(int argc, char** argv)
 	RegisterStandardCommands(test);
 	test->ExecuteCommand("importcfg config-new.ini");
 
+	test->ExecuteCommand("echo e=0x%H8:e; sqrt(2)=%V:sqrt2; 273+38=%R:sum 273 38;");
+
 	MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
 						test->GetCVarI32("DM_ColorDepth"));
@@ -30,7 +32,7 @@ int main(int argc, char** argv)
 	MainRM->SetReleaseTime(test->GetCVarUI32("RM_ReleaseTime"));
 	MainRM->SetNoReleaseThreshold(test->GetCVarI32("RM_NoReleaseThreshold"));
 
-	bool l = MainLM->LoadLanguageList("lang/langlist.ini");
+	MainLM->LoadLanguageList("lang/langlist.ini");
 	MainLM->SelectLanguage(test->GetCVar("LM_Language"));
 	al_clear_to_color(al_map_rgb(255,255,255));
 	al_rest(0.1);

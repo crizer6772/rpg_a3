@@ -9,3 +9,4 @@ int32_t i32max(int32_t a, int32_t b);
 int32_t i32min(int32_t a, int32_t b);
 int32_t i32clip(int32_t a, int32_t n, int32_t b);
 uint32_t pow2round(uint32_t n);
+void byte2hex(char* out, uint8_t b);
