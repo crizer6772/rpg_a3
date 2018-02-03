@@ -41,7 +41,6 @@ GameConsole::GameConsole()
 	cLogBufH = 0;
 	cLogCursorX = 0;
 	cLogCursorY = 0;
-	ConsoleCursorPos = 0;
 	ConsoleLogBuf = NULL;
 
 	/*
@@ -462,7 +461,7 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 /**
 LOG RELATED FUNCTIONS
 **/
-bool LogBufAlloc(uint16_t w, uint16_t h, bool cls)
+bool GameConsole::LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 {
 	if(!w || !h)
 		return false;
@@ -484,26 +483,26 @@ bool LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 	ConsoleLogBuf = newbuf;
 	return true;
 }
-bool Log(void* str, bool utf32)
+bool GameConsole::Log(void* str, bool utf32)
 {
 
 }
-bool LogLine(void* str, bool utf32)
+bool GameConsole::LogLine(void* str, bool utf32)
 {
 	Log(str,utf32);
 	LogLineFeed();
 }
-void LogLineFeed()
+void GameConsole::LogLineFeed()
 {
 	if(!ConsoleLogBuf)
 		return;
 
 }
-void LogSetColor(uint32_t col)
+void GameConsole::LogSetColor(uint32_t col)
 {
 
 }
-void LogSetColorCGA(uint8_t col)
+void GameConsole::LogSetColorCGA(uint8_t col)
 {
 
 }
