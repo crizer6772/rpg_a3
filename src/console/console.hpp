@@ -32,7 +32,7 @@ class GameConsole
 {
 	ConsoleVariable cvars[GC_MAX_CVARS];
 	ConsoleCommand cmd[GC_MAX_CMD];
-	uint32_t** ConsoleLogBuf;
+	uint32_t* ConsoleLogBuf;
     void SortCVars(int a, int b);
 	void SortCVars();
 	void SortCommands(int a, int b);
@@ -44,6 +44,8 @@ public:
 	size_t numCommands;
 	uint16_t cLogBufW;
 	uint16_t cLogBufH;
+	uint16_t cLogCursorX;
+	uint16_t cLogCursorY;
 
 	///CVAR RELATED FUNCTIONS
 	ConsoleVariable* FindCVar(const char* name);
@@ -70,11 +72,11 @@ public:
 
 	///LOG RELATED FUNCTIONS
 	bool LogBufAlloc(uint16_t w, uint16_t h, bool cls);
-	bool LogPush(void* str, bool utf32);
-	bool LogPushLine(void* str, bool utf32);
-
+	bool Log(void* str, bool utf32);
+	bool LogLine(void* str, bool utf32);
 	void LogLineFeed();
-
+	void LogSetColor(uint32_t col); //24-bit RGB
+	void LogSetColorCGA(uint8_t col); //4-bit RGBI
 
 	///COMMAND RELATED FUNCTIONS
 	ConsoleCommand* FindCommand(const char* name);

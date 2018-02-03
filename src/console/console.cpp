@@ -39,7 +39,15 @@ GameConsole::GameConsole()
 	numCommands = 0;
 	cLogBufW = 0;
 	cLogBufH = 0;
+	cLogCursorX = 0;
+	cLogCursorY = 0;
+	ConsoleCursorPos = 0;
 	ConsoleLogBuf = NULL;
+
+	/*
+	//might as well do this
+	memset(this,0,sizeof(GameConsole));
+	*/
 }
 /**
 CVAR RELATED FUNCTIONS
@@ -454,7 +462,51 @@ size_t GameConsole::ParseReplacementTokens(char* out, const char* str, size_t bu
 /**
 LOG RELATED FUNCTIONS
 **/
+bool LogBufAlloc(uint16_t w, uint16_t h, bool cls)
+{
+	if(!w || !h)
+		return false;
 
+	uint32_t* newbuf = new uint32_t[w*h];
+	memset(newbuf,' ',w*h*sizeof(uint32_t));
+	if(!cls && ConsoleLogBuf)
+	{
+		int32_t offset = i32max(0,cLogBufH-h);
+		int32_t height = i32min(cLogBufH,h);
+		for(uint16_t i=offset; i<offset+height; i++)
+		{
+			memcpy(&newbuf[w*i],&ConsoleLogBuf[cLogBufW*i],ui32min(cLogBufW,w)*sizeof(uint32_t));
+		}
+		delete[] ConsoleLogBuf;
+	}
+	cLogBufW = w;
+	cLogBufH = h;
+	ConsoleLogBuf = newbuf;
+	return true;
+}
+bool Log(void* str, bool utf32)
+{
+
+}
+bool LogLine(void* str, bool utf32)
+{
+	Log(str,utf32);
+	LogLineFeed();
+}
+void LogLineFeed()
+{
+	if(!ConsoleLogBuf)
+		return;
+
+}
+void LogSetColor(uint32_t col)
+{
+
+}
+void LogSetColorCGA(uint8_t col)
+{
+
+}
 
 /**
 COMMAND RELATED FUNCTIONS
