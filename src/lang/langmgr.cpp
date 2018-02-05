@@ -40,17 +40,20 @@ void LanguageMgr::ResizeLInfArray(size_t s)
 	size_t dCap = pow2round(s)<<1;
 	if(LInfCapacity == 0)
 	{
-		langInfo = new LangInfo[dCap];
-		memset(langInfo, 0, dCap*sizeof(LangInfo));
+		langInfo = (LangInfo*)calloc(dCap, sizeof(LangInfo));
 		LInfCapacity = dCap;
 	}
 	else if(dCap != LInfCapacity)
 	{
+		langInfo = (LangInfo*)realloc(langInfo, dCap*sizeof(LangInfo));
+		if(dCap > LInfCapacity)
+			memset(&langInfo[LInfCapacity], 0, (dCap-LInfCapacity)*sizeof(LangInfo));
+		/*
 		LangInfo* nl = new LangInfo[dCap];
 		memset(nl, 0, dCap*sizeof(LangInfo));
 		memcpy(nl, langInfo, ui32min(dCap, LInfCapacity)*sizeof(LangInfo));
 		delete[] langInfo;
-		langInfo = nl;
+		langInfo = nl;*/
 		LInfCapacity = dCap;
 	}
 }
@@ -103,7 +106,7 @@ LanguageMgr::LanguageMgr()
 LanguageMgr::~LanguageMgr()
 {
 	if(langInfo)
-		delete[] langInfo;
+		free(langInfo);
 }
 
 bool LanguageMgr::LoadLanguageList(const char* filename)

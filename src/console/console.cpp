@@ -466,7 +466,7 @@ bool GameConsole::LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 	if(!w || !h)
 		return false;
 
-	uint32_t* newbuf = new uint32_t[w*h];
+	uint32_t* newbuf = (uint32_t*)malloc(w*h*sizeof(uint32_t));
 	memset(newbuf,' ',w*h*sizeof(uint32_t));
 	if(!cls && ConsoleLogBuf)
 	{
@@ -476,7 +476,7 @@ bool GameConsole::LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 		{
 			memcpy(&newbuf[w*i],&ConsoleLogBuf[cLogBufW*i],ui32min(cLogBufW,w)*sizeof(uint32_t));
 		}
-		delete[] ConsoleLogBuf;
+		free(ConsoleLogBuf);
 	}
 	cLogBufW = w;
 	cLogBufH = h;

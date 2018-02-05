@@ -41,14 +41,14 @@ ResourceMgr::~ResourceMgr()
 	{
 		if(resources[i].filename)
 		{
-			delete[] resources[i].filename;
+			free(resources[i].filename);
 		}
 	}
 	for(int i=0; i<RESMGR_MAX_FONTS; i++)
 	{
 		if(fonts[i].filename)
 		{
-			delete[] fonts[i].filename;
+			free(fonts[i].filename);
 		}
 	}
 	//ReleaseAllResources();
@@ -83,8 +83,7 @@ void ResourceMgr::GenerateNullResources()
 							0x00000000, 0x00000000, 0x00000070, 0x155DD510,
 							0x154CD570, 0x15511550, 0x1F1DC770, 0x00401000,
 							0x00000000, 0x00000000, 0x00000000, 0x00000000};
-	uint16_t* audio_buf = new uint16_t[441];
-	memset(audio_buf, 0, 441*sizeof(uint16_t));
+	uint16_t* audio_buf = (uint16_t*)calloc(441, sizeof(uint16_t));
 
 	NullFont = al_create_builtin_font();
 	NullBmp = al_create_bitmap(32, 32);
@@ -109,7 +108,7 @@ void ResourceMgr::GenerateNullResources()
 	al_unlock_bitmap(NullBmp);
 	al_set_target_bitmap(tb);
 
-	//delete[] audio_buf;
+	//free(audio_buf);
 }
 
 void ResourceMgr::SortResources(int a, int b)
@@ -151,7 +150,6 @@ void ResourceMgr::SortFonts(int a, int b)
 	{
 		return;
 	}
-
 	int i = a-1;
 	int j = b+1;
 	while(1)
@@ -232,7 +230,7 @@ bool ResourceMgr::LoadBitmap(const char* filename)
 	resource* r = FindResource(filename);
 	if(!r)
 	{
-		resources[numResources++] = resource(RESMGR_RESTYPE_BITMAP, ptr, true, al_get_time(), new char[strlen(filename)+1]);
+		resources[numResources++] = resource(RESMGR_RESTYPE_BITMAP, ptr, true, al_get_time(), (char*)malloc(strlen(filename)+1));
 		strcpy(resources[numResources-1].filename, filename);
 		SortResources();
 		return true;
@@ -266,7 +264,7 @@ bool ResourceMgr::LoadSample(const char* filename)
 	resource* r = FindResource(filename);
 	if(!r)
 	{
-		resources[numResources++] = resource(RESMGR_RESTYPE_SAMPLE, ptr, true, al_get_time(), new char[strlen(filename)+1]);
+		resources[numResources++] = resource(RESMGR_RESTYPE_SAMPLE, ptr, true, al_get_time(), (char*)malloc(strlen(filename)+1));
 		strcpy(resources[numResources-1].filename, filename);
 		SortResources();
 		return true;
@@ -376,11 +374,13 @@ bool ResourceMgr::LoadFont(const char* filename, uint32_t fSize)
 	{
 		fontres n;
 		n.capacity = pow2round(rSize)<<1;
-		n.s = new sFont[n.capacity];
+		n.s = (sFont*)malloc(n.capacity*sizeof(sFont));
+		for(size_t i=0; i<n.capacity; i++)
+			n.s[i] = sFont();
 		n.s[rSize].f = ptr;
 		n.s[rSize].last_used = al_get_time();
 		n.s[rSize].loaded = true;
-		n.filename = new char[strlen(filename)+1];
+		n.filename = (char*)malloc(strlen(filename)+1);
 		strcpy(n.filename,filename);
 		fonts[numFonts++] = n;
 		SortFonts();
@@ -391,10 +391,13 @@ bool ResourceMgr::LoadFont(const char* filename, uint32_t fSize)
 		size_t dCap = pow2round(rSize)<<1;
 		if(r->capacity < dCap)
 		{
-			sFont* n = new sFont[dCap];
+			/*sFont* n = new sFont[dCap];
 			memcpy(n, r->s, ui32min(r->capacity, dCap)*sizeof(sFont));
 			delete[] r->s;
-			r->s = n;
+			r->s = n;*/
+			r->s = (sFont*)realloc(r->s, dCap*sizeof(sFont));
+			for(size_t i=r->capacity; i<dCap; i++)
+				r->s[i] = sFont();
 			r->capacity = dCap;
 		}
 		if(r->s[rSize].f == NULL || !r->s[rSize].loaded)
