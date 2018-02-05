@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 			MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
 						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
 						test->GetCVarI32("DM_ColorDepth"));
-			MainRM->ReleaseAllResources();
+			MainRM->ReloadAllResources();
 		}
 	}
 }

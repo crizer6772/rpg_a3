@@ -519,34 +519,28 @@ void ResourceMgr::ReleaseAllResources()
 		al_destroy_font(NullFont);
 		al_destroy_sample(NullSmp);
 		al_destroy_bitmap(NullBmp);
-		GenerateNullResources();
 	}
 }
 
 void ResourceMgr::ReloadAllResources()
 {
-	for(int i=0; i<RESMGR_MAX_RESOURCES&&resources[i].filename; i++)
+	ReleaseAllResources();
+
+	resource rn[numResources];
+	fontres fn[numFonts];
+	memcpy(rn,resources,numResources*sizeof(resource));
+	memcpy(fn,fonts,numFonts*sizeof(fontres));
+
+	for(size_t i=0; i<numResources; i++)
 	{
-		resource* r = &resources[i];
-		if(r->type == RESMGR_RESTYPE_BITMAP)
-		{
-			this->LoadBitmap(r->filename);
-		}
-		else if(r->type == RESMGR_RESTYPE_SAMPLE)
-		{
-			this->LoadSample(r->filename);
-		}
+		this->GetBitmap(rn[i].filename);
+		this->GetSample(rn[i].filename);
 	}
-	for(int i=0; i<RESMGR_MAX_FONTS&&fonts[i].filename; i++)
+	for(size_t i=0; i<numFonts; i++)
 	{
-		fontres* r = &fonts[i];
-		for(int j=0; j<r->capacity; j++)
-		{
-			if(r->s[j].last_used > 0)
-			{
-				LoadFont(r->filename, j);
-			}
-		}
+		for(uint16_t j=0; j<fn[i].capacity; j++)
+			if(fn[i].s[j].last_used > 0)
+				this->GetFont(fn[i].filename, j);
 	}
 	GenerateNullResources();
 }
