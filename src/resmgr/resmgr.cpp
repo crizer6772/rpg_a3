@@ -111,71 +111,18 @@ void ResourceMgr::GenerateNullResources()
 	//free(audio_buf);
 }
 
-void ResourceMgr::SortResources(int a, int b)
+int qsResCompare(const void* a, const void* b)
 {
-	if(b<=a)
-	{
-		return;
-	}
-
-	int i = a-1;
-	int j = b+1;
-	while(1)
-	{
-		while(strcmp_c(resources[(a+b)/2].filename, resources[++i].filename) < 0);
-		while(strcmp_c(resources[(a+b)/2].filename, resources[--j].filename) > 0);
-		if(i <= j)
-		{
-			//swap
-			resource aux = resources[i];
-			resources[i] = resources[j];
-			resources[j] = aux;
-		}
-		else
-			break;
-	}
-	if(j > a)
-		SortResources(a, j);
-	if(i < b)
-		SortResources(i, b);
+	ResourceMgr::resource* va = (ResourceMgr::resource*)a;
+	ResourceMgr::resource* vb = (ResourceMgr::resource*)b;
+	return strcmp_c(vb->filename, va->filename);
 }
-void ResourceMgr::SortResources()
+int qsFontCompare(const void* a, const void* b)
 {
-	SortResources(0, numResources-1);
+	ResourceMgr::fontres* va = (ResourceMgr::fontres*)a;
+	ResourceMgr::fontres* vb = (ResourceMgr::fontres*)b;
+	return strcmp_c(vb->filename, va->filename);
 }
-
-void ResourceMgr::SortFonts(int a, int b)
-{
-	if(b<=a)
-	{
-		return;
-	}
-	int i = a-1;
-	int j = b+1;
-	while(1)
-	{
-		while(strcmp_c(fonts[(a+b)/2].filename, fonts[++i].filename) < 0);
-		while(strcmp_c(fonts[(a+b)/2].filename, fonts[--j].filename) > 0);
-		if(i <= j)
-		{
-			//swap
-			fontres aux = fonts[i];
-			fonts[i] = fonts[j];
-			fonts[j] = aux;
-		}
-		else
-			break;
-	}
-	if(j > a)
-		SortFonts(a, j);
-	if(i < b)
-		SortFonts(i, b);
-}
-void ResourceMgr::SortFonts()
-{
-	SortFonts(0, numFonts-1);
-}
-
 
 ResourceMgr::fontres* ResourceMgr::FindFont(const char* name)
 {
@@ -232,7 +179,7 @@ bool ResourceMgr::LoadBitmap(const char* filename)
 	{
 		resources[numResources++] = resource(RESMGR_RESTYPE_BITMAP, ptr, true, al_get_time(), (char*)malloc(strlen(filename)+1));
 		strcpy(resources[numResources-1].filename, filename);
-		SortResources();
+		qsort(resources, numResources, sizeof(resource), qsResCompare);
 		return true;
 	}
 	else
@@ -266,7 +213,7 @@ bool ResourceMgr::LoadSample(const char* filename)
 	{
 		resources[numResources++] = resource(RESMGR_RESTYPE_SAMPLE, ptr, true, al_get_time(), (char*)malloc(strlen(filename)+1));
 		strcpy(resources[numResources-1].filename, filename);
-		SortResources();
+		qsort(resources, numResources, sizeof(resource), qsResCompare);
 		return true;
 	}
 	else
@@ -383,7 +330,7 @@ bool ResourceMgr::LoadFont(const char* filename, uint32_t fSize)
 		n.filename = (char*)malloc(strlen(filename)+1);
 		strcpy(n.filename,filename);
 		fonts[numFonts++] = n;
-		SortFonts();
+		qsort(fonts, numFonts, sizeof(fontres), qsFontCompare);
 		return true;
 	}
 	else

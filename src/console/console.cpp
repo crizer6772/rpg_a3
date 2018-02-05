@@ -48,6 +48,19 @@ GameConsole::GameConsole()
 	memset(this,0,sizeof(GameConsole));
 	*/
 }
+
+int qsCVarCompare(const void* a, const void* b)
+{
+	ConsoleVariable* va = (ConsoleVariable*)a;
+	ConsoleVariable* vb = (ConsoleVariable*)b;
+	return strcmp_c(vb->name, va->name);
+}
+int qsCmdCompare(const void* a, const void* b)
+{
+	ConsoleCommand* va = (ConsoleCommand*)a;
+	ConsoleCommand* vb = (ConsoleCommand*)b;
+	return strcmp_c(vb->name, va->name);
+}
 /**
 CVAR RELATED FUNCTIONS
 **/
@@ -87,7 +100,7 @@ bool GameConsole::CreateCVar(const char* name, const char* value)
 		return true;
 	}
 	cvars[numCVars++] = ConsoleVariable(name, value);
-	SortCVars();
+	qsort(cvars, numCVars, sizeof(ConsoleVariable), qsCVarCompare);
 	return true;
 }
 bool GameConsole::RemoveCVar(const char* name)
@@ -100,47 +113,8 @@ bool GameConsole::RemoveCVar(const char* name)
 
     memmove(v, v+1, ((numCVars--)-(1+v-cvars)) * sizeof(ConsoleVariable));
     cvars[numCVars] = ConsoleVariable();
-    SortCVars();
+    qsort(cvars, numCVars, sizeof(ConsoleVariable), qsCVarCompare);
     return true;
-}
-void GameConsole::SortCVars(int a, int b)
-{
-	/*
-	(2018-01-26)
-	yes i know, i don't need to do quicksort since we're only adding one entry at a time.
-	what i should be doing is finding the index where we want to push the entry in O(n)
-	and then push it there. but i'm lazy and this is just not worth doing having in mind
-	how often you're gonna call CreateCVar()
-	*/
-	if(b<=a)
-	{
-		return;
-	}
-
-	int i = a-1;
-	int j = b+1;
-	while(1)
-	{
-		while(strcmp_c(cvars[(a+b)/2].name, cvars[++i].name) < 0);
-		while(strcmp_c(cvars[(a+b)/2].name, cvars[--j].name) > 0);
-		if(i <= j)
-		{
-			//swap
-			ConsoleVariable aux = cvars[i];
-			cvars[i] = cvars[j];
-			cvars[j] = aux;
-		}
-		else
-			break;
-	}
-	if(j > a)
-		SortCVars(a, j);
-	if(i < b)
-		SortCVars(i, b);
-}
-void GameConsole::SortCVars()
-{
-	SortCVars(0, numCVars-1);
 }
 void GameConsole::ListCVarsToFile(FILE* f)
 {
@@ -467,6 +441,8 @@ bool GameConsole::LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 		return false;
 
 	uint32_t* newbuf = (uint32_t*)malloc(w*h*sizeof(uint32_t));
+	if(!newbuf)
+		return false;
 	memset(newbuf,' ',w*h*sizeof(uint32_t));
 	if(!cls && ConsoleLogBuf)
 	{
@@ -510,44 +486,6 @@ void GameConsole::LogSetColorCGA(uint8_t col)
 /**
 COMMAND RELATED FUNCTIONS
 **/
-void GameConsole::SortCommands(int a, int b)
-{
-	if(b<=a)
-	{
-		return;
-	}
-
-	int i = a-1;
-	int j = b+1;
-	while(1)
-	{
-		while(strcmp_c(cmd[(a+b)/2].name, cmd[++i].name) < 0);
-		while(strcmp_c(cmd[(a+b)/2].name, cmd[--j].name) > 0);
-		if(i <= j)
-		{
-			//swap
-			ConsoleCommand aux = cmd[i];
-			cmd[i] = cmd[j];
-			cmd[j] = aux;
-		}
-		else
-		{
-			break;
-		}
-	}
-	if(j > a)
-	{
-		SortCommands(a, j);
-	}
-	if(i < b)
-	{
-		SortCommands(i, b);
-	}
-}
-void GameConsole::SortCommands()
-{
-	SortCommands(0, numCommands-1);
-}
 ConsoleCommand* GameConsole::FindCommand(const char* name)
 {
 	if(!name)
@@ -593,7 +531,7 @@ bool GameConsole::AddCommand(const char* name, void* ptr, const char* helpstr)
 			return false;
 		}
 		cmd[numCommands++] = ConsoleCommand(name, ptr, helpstr);
-		SortCommands();
+		qsort(cmd, numCommands, sizeof(ConsoleCommand), qsCmdCompare);
 		return true;
 	}
 }

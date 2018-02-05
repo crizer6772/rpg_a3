@@ -15,6 +15,7 @@
 
 class ResourceMgr
 {
+public: //fuck it
 	struct resource
 	{
 		resource(int type, void* res, bool loaded, double last_used, char* filename);
@@ -49,15 +50,9 @@ class ResourceMgr
 	fontres* FindFont(const char* name);
 	resource* FindResource(const char* name);
 	int DetectExtension(const char* filename);
-
-	void SortResources(int a, int b);
-	void SortResources();
-
-	void SortFonts(int a, int b);
-	void SortFonts();
-
 	void GenerateNullResources();
-public:
+
+//public:
 	ALLEGRO_FONT* NullFont;
 	ALLEGRO_BITMAP* NullBmp; //returned by GetBitmap()/GetSample() when the actual resource can't be loaded
 	ALLEGRO_SAMPLE* NullSmp;

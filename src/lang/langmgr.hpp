@@ -4,6 +4,7 @@
 
 class LanguageMgr
 {
+public:
 	struct LangInfo
 	{
 		char* cName;
@@ -14,11 +15,11 @@ class LanguageMgr
 	LangInfo* langInfo;
 	size_t numLanguages;
 	size_t LInfCapacity;
-	void SortLInf(int a, int b);
-	void ResizeLInfArray(size_t s);
+	//void SortLInf(int a, int b);
+	bool ResizeLInfArray(size_t s);
 	LangInfo* FindLangInfo(const char* name);
 	void deinit();
-public:
+//public:
 	LanguageMgr();
 	~LanguageMgr();
 

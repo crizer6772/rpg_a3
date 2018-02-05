@@ -33,10 +33,6 @@ class GameConsole
 	ConsoleVariable cvars[GC_MAX_CVARS];
 	ConsoleCommand cmd[GC_MAX_CMD];
 	uint32_t* ConsoleLogBuf;
-    void SortCVars(int a, int b);
-	void SortCVars();
-	void SortCommands(int a, int b);
-	void SortCommands();
 
 public:
 	GameConsole();

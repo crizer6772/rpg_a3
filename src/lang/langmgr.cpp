@@ -1,61 +1,31 @@
 #include "langmgr.hpp"
 
-void LanguageMgr::SortLInf(int32_t a, int32_t b)
+int qsLInfCompare(const void* a, const void* b)
 {
-	if(b<=a)
-	{
-		return;
-	}
-	if(b-a==1)
-	{
-		LangInfo aux = langInfo[0];
-		langInfo[0] = langInfo[1];
-		langInfo[1] = aux;
-		return;
-	}
-	int32_t i = a-1;
-	int32_t j = b+1;
-	for(int32_t n=0;;n++)
-	{
-		while(strcmp_c(langInfo[(a+b)/2].cName, langInfo[++i].cName) < 0);
-		while(strcmp_c(langInfo[(a+b)/2].cName, langInfo[--j].cName) > 0);
-		if(i <= j)
-		{
-			LangInfo aux = langInfo[i];
-			langInfo[i] = langInfo[j];
-			langInfo[j] = aux;
-		}
-		else
-		{
-			break;
-		}
-	}
-	if(j > a)
-		SortLInf(a, j);
-	if(i < b)
-		SortLInf(i, b);
+	LanguageMgr::LangInfo* va = (LanguageMgr::LangInfo*)a;
+	LanguageMgr::LangInfo* vb = (LanguageMgr::LangInfo*)b;
+	return strcmp_c(vb->cName, va->cName);
 }
-void LanguageMgr::ResizeLInfArray(size_t s)
+bool LanguageMgr::ResizeLInfArray(size_t s)
 {
 	size_t dCap = pow2round(s)<<1;
 	if(LInfCapacity == 0)
 	{
 		langInfo = (LangInfo*)calloc(dCap, sizeof(LangInfo));
+		if(!langInfo)
+			return false;
 		LInfCapacity = dCap;
 	}
 	else if(dCap != LInfCapacity)
 	{
 		langInfo = (LangInfo*)realloc(langInfo, dCap*sizeof(LangInfo));
+		if(!langInfo)
+			return false;
 		if(dCap > LInfCapacity)
 			memset(&langInfo[LInfCapacity], 0, (dCap-LInfCapacity)*sizeof(LangInfo));
-		/*
-		LangInfo* nl = new LangInfo[dCap];
-		memset(nl, 0, dCap*sizeof(LangInfo));
-		memcpy(nl, langInfo, ui32min(dCap, LInfCapacity)*sizeof(LangInfo));
-		delete[] langInfo;
-		langInfo = nl;*/
 		LInfCapacity = dCap;
 	}
+	return true;
 }
 LanguageMgr::LangInfo* LanguageMgr::FindLangInfo(const char* name)
 {
@@ -127,7 +97,9 @@ bool LanguageMgr::LoadLanguageList(const char* filename)
 		ALLEGRO_CONFIG* nl = al_load_config_file(lFilename);
 		if(nl)
 		{
-			ResizeLInfArray(numLanguages+1);
+			bool a = ResizeLInfArray(numLanguages+1);
+			if(!a)
+				return false;
 			langInfo[numLanguages].cName = lName;
 			langInfo[numLanguages].cfg = nl;
 		}
@@ -137,7 +109,7 @@ bool LanguageMgr::LoadLanguageList(const char* filename)
 		}
 		r = (char*)al_get_next_config_entry(&it);
 	}
-	SortLInf(0, numLanguages-1);
+	qsort(langInfo, numLanguages, sizeof(LangInfo), qsLInfCompare);
 	return true;
 }
 bool LanguageMgr::LanguageExists(const char* name)
