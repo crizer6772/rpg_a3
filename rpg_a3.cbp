@@ -55,6 +55,8 @@
 		<Unit filename="src/incl_std.hpp" />
 		<Unit filename="src/lang/langmgr.cpp" />
 		<Unit filename="src/lang/langmgr.hpp" />
+		<Unit filename="src/lang/unihlp.cpp" />
+		<Unit filename="src/lang/unihlp.hpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/resmgr/resmgr.cpp" />
 		<Unit filename="src/resmgr/resmgr.hpp" />
