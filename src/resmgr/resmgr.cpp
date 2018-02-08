@@ -449,7 +449,7 @@ void ResourceMgr::ReleaseUnusedResources()
 			int rd = al_get_audio_depth_size(al_get_sample_depth(rr));
 			rSize = rl*rd;
 		}
-		if(rSize < NoReleaseThreshold)
+		if((uint32_t)rSize < NoReleaseThreshold)
 		{
 			continue;
 		}
@@ -469,10 +469,10 @@ void ResourceMgr::ReleaseUnusedResources()
 			r->loaded = false;
 		}
 	}
-	for(int i=0; i<numFonts; i++)
+	for(size_t i=0; i<numFonts; i++)
 	{
 		fontres* r = &fonts[i];
-		for(int j=0; j<r->capacity; j++)
+		for(size_t j=0; j<r->capacity; j++)
 		{
 			sFont* rs = &(r->s[j]);
 			if(rs->last_used < al_get_time()-ReleaseTime && rs->loaded)
@@ -501,10 +501,10 @@ void ResourceMgr::ReleaseAllResources()
 		r->loaded = false;
 	}
 
-	for(int i=0; i<numFonts; i++)
+	for(size_t i=0; i<numFonts; i++)
 	{
 		fontres* r = &fonts[i];
-		for(int j=0; j<r->capacity; j++)
+		for(size_t j=0; j<r->capacity; j++)
 		{
 			sFont* rs = &(r->s[j]);
 			if(rs->loaded)

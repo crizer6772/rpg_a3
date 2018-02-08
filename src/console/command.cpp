@@ -74,9 +74,12 @@ int GCCMD_listcommands(void* arg, void* con)
 
 bool RegisterStandardCommands(GameConsole* con)
 {
+	if(!con)
+		return false;
 	con->AddCommand("sum", (void*)GCCMD_sum, "returns the sum of 2 integers, intended for use with $R");
 	con->AddCommand("echo", (void*)GCCMD_echo, "do i really have to fucking explain");
 	con->AddCommand("importcfg", (void*)GCCMD_importcfg, "importcfg [name] - imports a config file to console variables");
 	con->AddCommand("listcvars", (void*)GCCMD_listcvars, "lists cvars in current console");
 	con->AddCommand("listcommands", (void*)GCCMD_listcommands, "list commands and pointers to their functions in current console");
+	return true;
 }
