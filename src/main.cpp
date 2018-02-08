@@ -42,13 +42,20 @@ int main(int argc, char** argv)
 	MainGC->LinkToDisplayMgr(MainDM);
 	MainGC->LinkToLanguageMgr(MainLM);
 	MainGC->LinkToResourceMgr(MainRM);
+	MainGC->LogBufAlloc(80,25,0);
+
+	MainGC->LogLine("test0",0);
+	MainGC->LogLine("test1",0);
+	MainGC->LogLine("test2",0);
+	MainGC->LogLine("test3",0);
 
 	int bmark;
 	double btime=al_get_time();
 	for(bmark=0;;bmark++)
 	{
-		if(!(bmark%500)) if(al_get_time()-btime>=1.0) break;
-		MainGC->ExecuteCommand("echo ABC(hex)=0x$H6[a] sqrt(2)=$F6[sqrt2] $V[i1]+$V[i2]=$R[sum $V[i1] $V[i2]] test=$L[TEXT_TEST]");
+		if(!(bmark%768)) if(al_get_time()-btime>=1.0) break;
+		MainGC->ExecuteCommand("echo ABC(hex)=0x$H6[a] sqrt(2)=$V[sqrt2] $V[i1]+$V[i2]=$R[sum $V[i1] $V[i2]]");
+		//MainGC->ExecuteCommand("echo $V[sqrt2]");
 	}
 	printf("%d commands per second\n",bmark);
 
@@ -56,7 +63,7 @@ int main(int argc, char** argv)
 	al_clear_to_color(al_map_rgb(255,255,255));
 	al_rest(0.1);
 	bool state = 0;
-	while(1)
+	for(uint64_t tick=0;;tick++)
 	{
 		ALLEGRO_KEYBOARD_STATE s;
 		al_get_keyboard_state(&s);
@@ -75,8 +82,24 @@ int main(int argc, char** argv)
 		int bw = al_get_bitmap_width(tb);
 		int bh = al_get_bitmap_height(tb);
 		al_draw_scaled_bitmap(tb,0,0,bw,bh,0,0,MainGC->GetCVarI32("DM_ScrWidth"), MainGC->GetCVarI32("DM_ScrHeight"),0);
-		ALLEGRO_FONT* rf = MainRM->GetFont("data/fonts/rmono.ttf", 26+10*sin(al_get_time()));
+		ALLEGRO_FONT* rf = MainRM->GetFont("data/fonts/nsans.ttf", 26+10*sin(al_get_time()));
+		ALLEGRO_FONT* con = MainRM->GetFont("data/fonts/rmono.ttf", 12);
 		al_draw_text(rf, al_map_rgb(255,255,255), 10, 10, 0, MainLM->GetString("TEXT_TEST"));
+		for(int i=0; i<MainGC->cLogBufH; i++)
+		{
+			char m[] = "null";
+			char* l = MainGC->LogGetLineUTF8(i);
+			if(!l) l=m;
+			al_draw_text(con, al_map_rgb(255,255,255), 10, 60+12*i, 0, l);
+		}
+
+		if(tick%32==0)
+		{
+			char buf[80];
+			sprintf(buf,"tick: %d ",(uint32_t)tick);
+			MainGC->LogLine(buf,0);
+		}
+
 		al_flip_display();
 		MainRM->ReleaseUnusedResources();
 

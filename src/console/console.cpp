@@ -220,7 +220,8 @@ bool GameConsole::LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 	uint32_t* newbuf = (uint32_t*)malloc(w*h*sizeof(uint32_t));
 	if(!newbuf)
 		return false;
-	memset(newbuf,' ',w*h*sizeof(uint32_t));
+	for(size_t i=0; i<w*h; i++)
+		newbuf[i] = (uint32_t)' ';
 	if(!cls && ConsoleLogBuf)
 	{
 		int32_t offset = i32max(0,cLogBufH-h);
@@ -234,21 +235,63 @@ bool GameConsole::LogBufAlloc(uint16_t w, uint16_t h, bool cls)
 	cLogBufW = w;
 	cLogBufH = h;
 	ConsoleLogBuf = newbuf;
+
+	if(UTF8LineBuf)
+		free(UTF8LineBuf);
+	UTF8LineBuf = (char*)calloc(w*h*4+1, 1);
 	return true;
 }
-bool GameConsole::Log(void* str, bool utf32)
+bool GameConsole::Log(const void* str, bool utf32)
 {
-
+	if(!ConsoleLogBuf || !str)
+		return false;
+	uint32_t* str32 = (uint32_t*)str;
+	char* str8 = (char*)str;
+	for(size_t i=0;;i++)
+	{
+		uint32_t ch=0;
+		if(utf32)
+			ch = str32[i];
+		else
+			ch = str8[i];
+		if(!ch)
+			break;
+		if(cLogCursorX >= cLogBufW)
+		{
+			cLogCursorY++;
+			cLogCursorX=0;
+		}
+		while(cLogCursorY >= cLogBufH)
+		{
+			LogLineFeed();
+			cLogCursorY--;
+		}
+		ConsoleLogBuf[cLogCursorY*cLogBufW+cLogCursorX] = ch;
+		cLogCursorX++;
+	}
+	return true;
 }
-bool GameConsole::LogLine(void* str, bool utf32)
+bool GameConsole::LogLine(const void* str, bool utf32)
 {
-	Log(str,utf32);
+	bool r = Log(str,utf32);
 	LogLineFeed();
+	return r;
 }
 void GameConsole::LogLineFeed()
 {
 	if(!ConsoleLogBuf)
 		return;
+	cLogCursorX = 0;
+	cLogCursorY++;
+
+	while(cLogCursorY >= cLogBufH)
+	{
+		cLogCursorY--;
+		for(uint16_t i=0; i<cLogBufH-1; i++)
+			memcpy(&ConsoleLogBuf[cLogBufW*i], &ConsoleLogBuf[cLogBufW*(i+1)], cLogBufW*sizeof(uint32_t));
+		for(uint16_t i=0; i<cLogBufW; i++)
+			ConsoleLogBuf[cLogBufW*(cLogBufH-1)+i] = (uint32_t)' ';
+	}
 
 }
 void GameConsole::LogSetColor(uint32_t col)
@@ -258,6 +301,15 @@ void GameConsole::LogSetColor(uint32_t col)
 void GameConsole::LogSetColorCGA(uint8_t col)
 {
 
+}
+char* GameConsole::LogGetLineUTF8(uint16_t y)
+{
+	if(y >= cLogBufH || !ConsoleLogBuf)
+		return NULL;
+	size_t s=0;
+	for(size_t i=0; i<cLogBufW; i++)
+		s += CPtoUTF8(&UTF8LineBuf[s],ConsoleLogBuf[y*cLogBufW+i]);
+	return UTF8LineBuf;
 }
 
 /**
@@ -334,7 +386,7 @@ void GameConsole::ParseCommand(const char* cmd, char* cmdpart, size_t cmdpart_s,
 {
 	char realcmd[rtsize+8];
 	memset(realcmd,0,rtsize+8);
-	size_t ss = ParseReplacementTokens(realcmd, cmd);
+	ParseReplacementTokens(realcmd, cmd);
 	bool s = false;
 	size_t cmdsize = 0;
 	size_t argsize = 0;
@@ -364,7 +416,8 @@ int GameConsole::ExecuteCommand(const char* cmd)
 		printf("error: GameConsole: empty command\n");
 		return -1;
 	}
-	int s = ParseReplacementTokens(NULL,cmd);
+	//int s = ParseReplacementTokens(NULL,cmd);
+	int s = 1024;
 	char cmdpart[s];
 	char argpart[s];
 	memset(cmdpart, 0, s);

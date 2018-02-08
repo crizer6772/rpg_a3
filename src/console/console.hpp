@@ -3,6 +3,7 @@
 #include "../lang/langmgr.hpp"
 #include "../display/display.hpp"
 #include "../resmgr/resmgr.hpp"
+#include "../lang/unihlp.hpp"
 
 #define GC_CVAR_MAX_NAME_SIZE 32
 #define GC_CVAR_MAX_DATA_SIZE 64
@@ -36,6 +37,7 @@ class GameConsole
 	ConsoleVariable cvars[GC_MAX_CVARS];
 	ConsoleCommand cmd[GC_MAX_CMD];
 	uint32_t* ConsoleLogBuf;
+	char* UTF8LineBuf;
 	LanguageMgr* lm;
 	DisplayMgr* dm;
 	ResourceMgr* rm;
@@ -79,11 +81,12 @@ public:
 
 	///LOG RELATED FUNCTIONS
 	bool LogBufAlloc(uint16_t w, uint16_t h, bool cls);
-	bool Log(void* str, bool utf32);
-	bool LogLine(void* str, bool utf32);
+	bool Log(const void* str, bool utf32);
+	bool LogLine(const void* str, bool utf32);
 	void LogLineFeed();
 	void LogSetColor(uint32_t col); //24-bit RGB
 	void LogSetColorCGA(uint8_t col); //4-bit RGBI
+	char* LogGetLineUTF8(uint16_t y);
 
 	///COMMAND RELATED FUNCTIONS
 	ConsoleCommand* FindCommand(const char* name);

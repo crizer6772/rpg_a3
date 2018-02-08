@@ -31,7 +31,9 @@ int GCCMD_sum(void* arg, void* con)
 }
 int GCCMD_echo(void* arg, void* con)
 {
-	printf("%s\n", (char*)arg);
+	//printf("%s\n", (char*)arg);
+	GameConsole* cCon = (GameConsole*)con;
+	cCon->LogLine((char*)arg,0);
 	return 311;
 }
 int GCCMD_importcfg(void* arg, void* con)
@@ -72,7 +74,7 @@ int GCCMD_listcommands(void* arg, void* con)
 
 bool RegisterStandardCommands(GameConsole* con)
 {
-	con->AddCommand("sum", (void*)GCCMD_sum, "returns the sum of 2 integers, intended for use with %R");
+	con->AddCommand("sum", (void*)GCCMD_sum, "returns the sum of 2 integers, intended for use with $R");
 	con->AddCommand("echo", (void*)GCCMD_echo, "do i really have to fucking explain");
 	con->AddCommand("importcfg", (void*)GCCMD_importcfg, "importcfg [name] - imports a config file to console variables");
 	con->AddCommand("listcvars", (void*)GCCMD_listcvars, "lists cvars in current console");

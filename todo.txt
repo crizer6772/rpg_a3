@@ -1,4 +1,4 @@
-resmgr/con: binary search
+resmgr/con: binary search (done)
 Actor, ActorStatic, ActorDynamic
 World::UpdatePhysics()
 
