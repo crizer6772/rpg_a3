@@ -40,6 +40,7 @@
 		</Compiler>
 		<Unit filename="src/a5init.cpp" />
 		<Unit filename="src/a5init.hpp" />
+		<Unit filename="src/console/cmdparse.cpp" />
 		<Unit filename="src/console/command.cpp" />
 		<Unit filename="src/console/command.hpp" />
 		<Unit filename="src/console/console.cpp" />

@@ -12,34 +12,47 @@ int main(int argc, char** argv)
 		return 0;
 	al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 
-	GameConsole* test = new GameConsole;
+	GameConsole* MainGC = new GameConsole;
 	DisplayMgr* MainDM = new DisplayMgr;
 	LanguageMgr* MainLM = new LanguageMgr;
-	test->CreateCVar("sqrt2", "1.414213562373095");
-	test->CreateCVar("pi", "3.141592653589793");
-	test->CreateCVar("e", "2.718281828459045");
-	test->CreateCVar("i1", "273");
-	test->CreateCVar("i2", "38");
-	test->CreateCVar("a", "ABC");
+	MainGC->CreateCVar("sqrt2", "1.414213562373095");
+	MainGC->CreateCVar("pi", "3.141592653589793");
+	MainGC->CreateCVar("e", "2.718281828459045");
+	MainGC->CreateCVar("i1", "273");
+	MainGC->CreateCVar("i2", "38");
+	MainGC->CreateCVar("a", "ABC");
 
-	RegisterStandardCommands(test);
+	RegisterStandardCommands(MainGC);
 
-	test->ExecuteCommand("echo ABC(hex)=0x%H3:a; sqrt(2)=%V:sqrt2; %V:i1;+%V:i2;=%R:sum %V:i1; %V:i2;;");
-	test->ExecuteCommand("importcfg config-new.ini");
+	//MainGC->ExecuteCommand("echo ABC(hex)=0x%H3:a; sqrt(2)=%V:sqrt2; %V:i1;+%V:i2;=%R:sum %V:i1; %V:i2;;");
+	MainGC->ExecuteCommand("importcfg config-new.ini");
 
-
-
-	MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
-						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
-						test->GetCVarI32("DM_ColorDepth"));
+	MainDM->SetVideoMode(MainGC->GetCVarI32("DM_ScrWidth"), MainGC->GetCVarI32("DM_ScrHeight"),
+						MainGC->GetCVarI32("DM_FullscreenMode"), MainGC->GetCVarI32("DM_RefreshRate"),
+						MainGC->GetCVarI32("DM_ColorDepth"));
 
 
 	ResourceMgr* MainRM = new ResourceMgr;
-	MainRM->SetReleaseTime(test->GetCVarUI32("RM_ReleaseTime"));
-	MainRM->SetNoReleaseThreshold(test->GetCVarI32("RM_NoReleaseThreshold"));
+	MainRM->SetReleaseTime(MainGC->GetCVarUI32("RM_ReleaseTime"));
+	MainRM->SetNoReleaseThreshold(MainGC->GetCVarI32("RM_NoReleaseThreshold"));
 
 	MainLM->LoadLanguageList("lang/langlist.ini");
-	MainLM->SelectLanguage(test->GetCVar("LM_Language"));
+	MainLM->SelectLanguage(MainGC->GetCVar("LM_Language"));
+
+	MainGC->LinkToDisplayMgr(MainDM);
+	MainGC->LinkToLanguageMgr(MainLM);
+	MainGC->LinkToResourceMgr(MainRM);
+
+	int bmark;
+	double btime=al_get_time();
+	for(bmark=0;;bmark++)
+	{
+		if(!(bmark%500)) if(al_get_time()-btime>=1.0) break;
+		MainGC->ExecuteCommand("echo ABC(hex)=0x$H6[a] sqrt(2)=$F6[sqrt2] $V[i1]+$V[i2]=$R[sum $V[i1] $V[i2]] test=$L[TEXT_TEST]");
+	}
+	printf("%d commands per second\n",bmark);
+
+	MainGC->ExecuteCommand("echo ABC(hex)=0x$H6[a] sqrt(2)=$F6[sqrt2] $V[i1]+$V[i2]=$R0[sum $V[i1] $V[i2]] test=$L[TEXT_TEST]");
 	al_clear_to_color(al_map_rgb(255,255,255));
 	al_rest(0.1);
 	bool state = 0;
@@ -61,7 +74,7 @@ int main(int argc, char** argv)
 			tb = MainRM->GetBitmap("s2.png");
 		int bw = al_get_bitmap_width(tb);
 		int bh = al_get_bitmap_height(tb);
-		al_draw_scaled_bitmap(tb,0,0,bw,bh,0,0,test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),0);
+		al_draw_scaled_bitmap(tb,0,0,bw,bh,0,0,MainGC->GetCVarI32("DM_ScrWidth"), MainGC->GetCVarI32("DM_ScrHeight"),0);
 		ALLEGRO_FONT* rf = MainRM->GetFont("data/fonts/rmono.ttf", 26+10*sin(al_get_time()));
 		al_draw_text(rf, al_map_rgb(255,255,255), 10, 10, 0, MainLM->GetString("TEXT_TEST"));
 		al_flip_display();
@@ -69,11 +82,11 @@ int main(int argc, char** argv)
 
 		if(al_key_down(&s, ALLEGRO_KEY_F7))
 		{
-			test->SetCVar("DM_ScrWidth", 1024);
-			test->SetCVar("DM_ScrHeight", 768);
-			MainDM->SetVideoMode(test->GetCVarI32("DM_ScrWidth"), test->GetCVarI32("DM_ScrHeight"),
-						test->GetCVarI32("DM_FullscreenMode"), test->GetCVarI32("DM_RefreshRate"),
-						test->GetCVarI32("DM_ColorDepth"));
+			MainGC->SetCVar("DM_ScrWidth", 1024);
+			MainGC->SetCVar("DM_ScrHeight", 768);
+			MainDM->SetVideoMode(MainGC->GetCVarI32("DM_ScrWidth"), MainGC->GetCVarI32("DM_ScrHeight"),
+						MainGC->GetCVarI32("DM_FullscreenMode"), MainGC->GetCVarI32("DM_RefreshRate"),
+						MainGC->GetCVarI32("DM_ColorDepth"));
 			MainRM->ReloadAllResources();
 		}
 	}

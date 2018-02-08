@@ -1,5 +1,8 @@
 #pragma once
 #include "../incl_full.hpp"
+#include "../lang/langmgr.hpp"
+#include "../display/display.hpp"
+#include "../resmgr/resmgr.hpp"
 
 #define GC_CVAR_MAX_NAME_SIZE 32
 #define GC_CVAR_MAX_DATA_SIZE 64
@@ -33,7 +36,9 @@ class GameConsole
 	ConsoleVariable cvars[GC_MAX_CVARS];
 	ConsoleCommand cmd[GC_MAX_CMD];
 	uint32_t* ConsoleLogBuf;
-
+	LanguageMgr* lm;
+	DisplayMgr* dm;
+	ResourceMgr* rm;
 public:
 	GameConsole();
 	size_t numCVars;
@@ -61,10 +66,16 @@ public:
 	uint32_t GetCVarUI32(const char* name);
 	uint64_t GetCVarUI64(const char* name);
 
+	///LM/RM/DM INTEGRATION
+	void LinkToLanguageMgr(LanguageMgr* lm);
+	void LinkToDisplayMgr(DisplayMgr* dm);
+	void LinkToResourceMgr(ResourceMgr* rm);
+
+
 	///STRING PARSING
-	bool IsReplacementTokenValid(const char* str);
-	size_t ParseReplacementToken(char* out, const char* str, size_t bufsize);
-	size_t ParseReplacementTokens(char* out, const char* str, size_t bufsize);
+	bool IsRTTypeValid(char* rttype);
+	int32_t ParseReplacementToken(char* out, char type, int param, const char* value);
+	int32_t ParseReplacementTokens(char* out, const char* str);
 
 	///LOG RELATED FUNCTIONS
 	bool LogBufAlloc(uint16_t w, uint16_t h, bool cls);

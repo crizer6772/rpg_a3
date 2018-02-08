@@ -52,7 +52,6 @@ int GCCMD_importcfg(void* arg, void* con)
 		char* cvName = r;
 		char* cvValue = (char*)al_get_config_value(cfg, NULL, cvName);
 		cCon->CreateCVar(cvName, cvValue);
-		printf("console <- (%s, value: %s)\n", cCon->FindCVar(cvName)->name, cCon->FindCVar(cvName)->data);
 		r = (char*)al_get_next_config_entry(&it);
 	}
 	al_destroy_config(cfg);
