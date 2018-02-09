@@ -44,11 +44,6 @@ int main(int argc, char** argv)
 	MainGC->LinkToResourceMgr(MainRM);
 	MainGC->LogBufAlloc(80,25,0);
 
-	MainGC->LogLine("test0",0);
-	MainGC->LogLine("test1",0);
-	MainGC->LogLine("test2",0);
-	MainGC->LogLine("test3",0);
-
 	int bmark;
 	double btime=al_get_time();
 	for(bmark=0;;bmark++)
@@ -93,11 +88,11 @@ int main(int argc, char** argv)
 			al_draw_text(con, al_map_rgb(255,255,255), 10, 60+12*i, 0, l);
 		}
 
-		if(tick%32==0)
+		if(tick%2==0)
 		{
 			char buf[80];
 			sprintf(buf,"tick: %d ",(uint32_t)tick);
-			MainGC->LogLine(buf,0);
+			MainGC->Log(buf,0);
 		}
 
 		al_flip_display();

@@ -47,7 +47,6 @@
 		<Unit filename="src/console/console.hpp" />
 		<Unit filename="src/display/display.cpp" />
 		<Unit filename="src/display/display.hpp" />
-		<Unit filename="src/global.hpp" />
 		<Unit filename="src/hlpfunc.cpp" />
 		<Unit filename="src/hlpfunc.hpp" />
 		<Unit filename="src/incl_a5.hpp" />

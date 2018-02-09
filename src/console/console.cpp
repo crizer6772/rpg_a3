@@ -45,7 +45,7 @@ GameConsole::GameConsole()
 	lm = NULL;
 	rm = NULL;
 	dm = NULL;
-
+	UTF8LineBuf = NULL;
 	/*
 	//might as well do this
 	memset(this,0,sizeof(GameConsole));

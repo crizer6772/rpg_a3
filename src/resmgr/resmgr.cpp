@@ -309,7 +309,7 @@ ALLEGRO_SAMPLE* ResourceMgr::GetSample(const char* filename)
 bool ResourceMgr::LoadFont(const char* filename, uint32_t fSize)
 {
 	uint32_t rSize = ui32clip(1, fSize, RESMGR_MAX_FONT_SIZE);
-	ALLEGRO_FONT* ptr = al_load_font(filename, -(int32_t)rSize, ALLEGRO_TTF_MONOCHROME);
+	ALLEGRO_FONT* ptr = al_load_font(filename, -(int32_t)rSize, 0);
 	if(!ptr)
 	{
 		al_destroy_font(ptr);
