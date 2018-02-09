@@ -4,7 +4,7 @@
 #include "lang/langmgr.hpp"
 #include "display/display.hpp"
 #include "console/console.hpp"
-#include "console/command.hpp"
+#include "console/commoncmd.hpp"
 
 int main(int argc, char** argv)
 {

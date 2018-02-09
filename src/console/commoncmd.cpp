@@ -1,4 +1,4 @@
-#include "command.hpp"
+#include "commoncmd.hpp"
 
 
 int GCCMD_sum(void* arg, void* con)
@@ -14,13 +14,9 @@ int GCCMD_sum(void* arg, void* con)
 		if((str[i]>='0'&&str[i]<='9')||str[i]=='-')
 		{
 			if(i==0)
-			{
 				p[pp++]=i;
-			}
 			else if(str[i-1]!='-'&&(str[i-1]<='0'||str[i-1]>='9'))
-			{
 				p[pp++]=i;
-			}
 		}
 	}
 	if(p[0] != -1)

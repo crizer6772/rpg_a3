@@ -26,7 +26,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O3" />
+					<Add option="-O2" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -41,12 +41,20 @@
 		<Unit filename="src/a5init.cpp" />
 		<Unit filename="src/a5init.hpp" />
 		<Unit filename="src/console/cmdparse.cpp" />
-		<Unit filename="src/console/command.cpp" />
-		<Unit filename="src/console/command.hpp" />
+		<Unit filename="src/console/commoncmd.cpp" />
+		<Unit filename="src/console/commoncmd.hpp" />
 		<Unit filename="src/console/console.cpp" />
 		<Unit filename="src/console/console.hpp" />
 		<Unit filename="src/display/display.cpp" />
 		<Unit filename="src/display/display.hpp" />
+		<Unit filename="src/gui/commonctr.cpp" />
+		<Unit filename="src/gui/commonctr.hpp" />
+		<Unit filename="src/gui/control.cpp" />
+		<Unit filename="src/gui/control.hpp" />
+		<Unit filename="src/gui/desktop.cpp" />
+		<Unit filename="src/gui/desktop.hpp" />
+		<Unit filename="src/gui/window.cpp" />
+		<Unit filename="src/gui/window.hpp" />
 		<Unit filename="src/hlpfunc.cpp" />
 		<Unit filename="src/hlpfunc.hpp" />
 		<Unit filename="src/incl_a5.hpp" />
