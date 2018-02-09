@@ -416,8 +416,8 @@ int GameConsole::ExecuteCommand(const char* cmd)
 		printf("error: GameConsole: empty command\n");
 		return -1;
 	}
-	//int s = ParseReplacementTokens(NULL,cmd);
-	int s = 1024;
+	int s = ParseReplacementTokens(NULL,cmd);
+	//int s = 1024;
 	char cmdpart[s];
 	char argpart[s];
 	memset(cmdpart, 0, s);
