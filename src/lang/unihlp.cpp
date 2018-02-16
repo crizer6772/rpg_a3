@@ -52,3 +52,19 @@ size_t UTF32toUTF8(char* out, uint32_t* in)
 		s += CPtoUTF8((out)?out+s:out, in[i]);
 	return s;
 }
+
+uint32_t UTF8ByteGroupCodepoint(char* in)
+{
+	uint32_t res = 0;
+	if(in[0])
+	{
+		if(in&0x80)
+		{
+            //TODO
+		}
+	}
+	else
+	{
+		return 0;
+	}
+}

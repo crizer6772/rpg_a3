@@ -413,7 +413,7 @@ int GameConsole::ExecuteCommand(const char* cmd)
 	ConsoleCommand* c;
 	if(!cmd || !(*cmd))
 	{
-		printf("error: GameConsole: empty command\n");
+		LogLine("error: GameConsole: empty command\n", 0);
 		return -1;
 	}
 	int s = ParseReplacementTokens(NULL,cmd);
@@ -426,7 +426,7 @@ int GameConsole::ExecuteCommand(const char* cmd)
 	c = FindCommand(cmdpart);
 	if(!c)
 	{
-		printf("error: GameConsole: invalid command\n");
+		LogLine("error: GameConsole: invalid command\n", 0);
 		return -1;
 	}
 

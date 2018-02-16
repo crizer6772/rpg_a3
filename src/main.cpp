@@ -90,9 +90,9 @@ int main(int argc, char** argv)
 
 		if(tick%2==0)
 		{
-			char buf[80];
-			sprintf(buf,"tick: %d ",(uint32_t)tick);
-			MainGC->Log(buf,0);
+			char cmdbuf[128];
+			sprintf(cmdbuf, "echo $L[TICK_COUNT]: %d",tick);
+			MainGC->ExecuteCommand(cmdbuf);
 		}
 
 		al_flip_display();

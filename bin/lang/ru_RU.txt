@@ -4,6 +4,7 @@
 langname = Русский
 
 TEXT_TEST = СУКА БЛЯТЬ
+TICK_COUNT = СУКА БЛЯТЬ
 MMENU_NEWGAME = Новая игра
 MMENU_LVEDIT = Редактор мап
 MMENU_OPTIONS = Настройки

@@ -11,3 +11,4 @@ MMENU_EXIT = Wyjście
 OPTIONS_GAME = Opcje rozgrywki
 OPTIONS_AUDIO = Opcje dźwięku
 OPTIONS_GFX = Opcje grafiki
+TICK_COUNT = tick

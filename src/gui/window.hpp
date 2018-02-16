@@ -5,6 +5,7 @@
 
 class GDWindow
 {
+	GWDesktop* desktop;
 	GWControl* control;
 	ALLEGRO_BITMAP* bmp;
 	bool redraw_requested;
@@ -14,7 +15,9 @@ public:
 	bool Redraw();
 	bool ForceRedraw();
 	bool SendEvent(ALLEGRO_EVENT* ev);
-	bool CreateControl(const char* type, const char* name);
+
+	GWControl* GetControl(const char* name);
+	bool CreateControl(const char* type, const char* name, float x, float y, float w, float h);
 	bool RemoveControl(const char* name);
-	bool SetControlParam();
+	void Clear();
 };
