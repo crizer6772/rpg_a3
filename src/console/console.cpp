@@ -251,9 +251,19 @@ bool GameConsole::Log(const void* str, bool utf32)
 	{
 		uint32_t ch=0;
 		if(utf32)
+		{
 			ch = str32[i];
+		}
 		else
-			ch = str8[i];
+		{
+			ch = UTF8ByteGroupCodepoint(&str8[i]);
+			if((str8[i]&0xD0) == 0xD0)
+			{
+				i++;
+				while((str8[i]&0xD0) == 0x80)
+					i++;
+			}
+		}
 		if(!ch)
 			break;
 		if(cLogCursorX >= cLogBufW)
@@ -268,13 +278,14 @@ bool GameConsole::Log(const void* str, bool utf32)
 		}
 		ConsoleLogBuf[cLogCursorY*cLogBufW+cLogCursorX] = ch;
 		cLogCursorX++;
+		if((str8[i]&0xD0) == 0xD0) i--;
 	}
 	return true;
 }
 bool GameConsole::LogLine(const void* str, bool utf32)
 {
 	bool r = Log(str,utf32);
-	LogLineFeed();
+	if(r) LogLineFeed();
 	return r;
 }
 void GameConsole::LogLineFeed()

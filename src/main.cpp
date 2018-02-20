@@ -52,9 +52,11 @@ int main(int argc, char** argv)
 		MainGC->ExecuteCommand("echo ABC(hex)=0x$H6[a] sqrt(2)=$V[sqrt2] $V[i1]+$V[i2]=$R[sum $V[i1] $V[i2]]");
 		//MainGC->ExecuteCommand("echo $V[sqrt2]");
 	}
-	printf("%d commands per second\n",bmark);
+	MainGC->CreateCVar("benchresult", "0");
+	MainGC->SetCVar("benchresult", bmark);
+	MainGC->ExecuteCommand("echo $V[benchresult] commands per second");
+	MainGC->RemoveCVar("benchresult");
 
-	MainGC->ExecuteCommand("echo ABC(hex)=0x$H6[a] sqrt(2)=$F6[sqrt2] $V[i1]+$V[i2]=$R0[sum $V[i1] $V[i2]] test=$L[TEXT_TEST]");
 	al_clear_to_color(al_map_rgb(255,255,255));
 	al_rest(0.1);
 	bool state = 0;
@@ -88,7 +90,7 @@ int main(int argc, char** argv)
 			al_draw_text(con, al_map_rgb(255,255,255), 10, 60+12*i, 0, l);
 		}
 
-		if(tick%2==0)
+		if(tick%71==0)
 		{
 			char cmdbuf[128];
 			sprintf(cmdbuf, "echo $L[TICK_COUNT]: %d",tick);
