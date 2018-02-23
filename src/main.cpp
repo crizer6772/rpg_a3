@@ -57,10 +57,18 @@ int main(int argc, char** argv)
 	MainGC->ExecuteCommand("echo $V[benchresult] commands per second");
 	MainGC->RemoveCVar("benchresult");
 
+
+	ALLEGRO_EVENT ev;
+	ALLEGRO_EVENT_QUEUE* eq = al_create_event_queue();
+	al_register_event_source(eq, al_get_keyboard_event_source());
+	uint32_t cmdlinebuf[80];
+	memset(cmdlinebuf,0,80*sizeof(uint32_t));
+	uint32_t cmdlinecur = 0;
+
 	al_clear_to_color(al_map_rgb(255,255,255));
 	al_rest(0.1);
 	bool state = 0;
-	for(uint64_t tick=0;;tick++)
+	for(MainGC->CreateCVar("tick", "0");;MainGC->SetCVar("tick", MainGC->GetCVarI32("tick")+1))
 	{
 		ALLEGRO_KEYBOARD_STATE s;
 		al_get_keyboard_state(&s);
@@ -78,23 +86,46 @@ int main(int argc, char** argv)
 			tb = MainRM->GetBitmap("s2.png");
 		int bw = al_get_bitmap_width(tb);
 		int bh = al_get_bitmap_height(tb);
+
+		int fsize = 24;
+
 		al_draw_scaled_bitmap(tb,0,0,bw,bh,0,0,MainGC->GetCVarI32("DM_ScrWidth"), MainGC->GetCVarI32("DM_ScrHeight"),0);
 		ALLEGRO_FONT* rf = MainRM->GetFont("data/fonts/nsans.ttf", 26+10*sin(al_get_time()));
-		ALLEGRO_FONT* con = MainRM->GetFont("data/fonts/rmono.ttf", 12);
+		ALLEGRO_FONT* con = MainRM->GetFont("data/fonts/rmono.ttf", fsize);
 		al_draw_text(rf, al_map_rgb(255,255,255), 10, 10, 0, MainLM->GetString("TEXT_TEST"));
+
+		uint32_t con_x1=10,con_y1=60,con_x2=16+al_get_text_width(con,"0")*80,con_y2=fsize*24+60;
+		al_draw_filled_rectangle(con_x1,con_y1,con_x2,con_y2,al_map_rgba(63,63,63,127));
+		al_draw_filled_rectangle(con_x1,con_y2,con_x2,con_y2+fsize,al_map_rgba(0,0,0,127));
 		for(int i=0; i<MainGC->cLogBufH; i++)
 		{
 			char m[] = "null";
 			char* l = MainGC->LogGetLineUTF8(i);
 			if(!l) l=m;
-			al_draw_text(con, al_map_rgb(255,255,255), 10, 60+12*i, 0, l);
+			al_draw_text(con, al_map_rgb(255,255,255), 10, 60+fsize*i, 0, l);
 		}
+		char cmdlinebuf8[320];
+		memset(cmdlinebuf8, 0, 320);
+		UTF32toUTF8(cmdlinebuf8, cmdlinebuf);
+		al_draw_text(con, al_map_rgb(255,255,0), 10, 60+fsize*24, 0, cmdlinebuf8);
 
-		if(tick%71==0)
+		while(al_get_next_event(eq, &ev))
 		{
-			char cmdbuf[128];
-			sprintf(cmdbuf, "echo $L[TICK_COUNT]: %d",tick);
-			MainGC->ExecuteCommand(cmdbuf);
+			if(ev.type == ALLEGRO_EVENT_KEY_CHAR)
+			{
+				if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER && *cmdlinebuf && *cmdlinebuf8)
+				{
+					MainGC->ExecuteCommand(cmdlinebuf8);
+					memset(cmdlinebuf,0,80*sizeof(uint32_t));
+					cmdlinecur = 0;
+				}
+				else if(ev.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && cmdlinecur)
+					cmdlinebuf[cmdlinecur--] = 0;
+				else if(ev.keyboard.keycode == ALLEGRO_KEY_DELETE)
+					memmove(&cmdlinebuf[cmdlinecur], &cmdlinebuf[cmdlinecur+1], 79-cmdlinecur);
+				else if(cmdlinecur < 79 && ev.keyboard.unichar)
+						cmdlinebuf[cmdlinecur++] = (uint32_t)ev.keyboard.unichar;
+			}
 		}
 
 		al_flip_display();
